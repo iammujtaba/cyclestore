@@ -1,11 +1,12 @@
-from fastapi import APIRouter, Depends, Request, Form
+from fastapi import APIRouter, Depends, Request, Form, UploadFile, File, HTTPException
 from sqlalchemy.orm import Session
 from app.db.session import get_db
 from app.crud import product as crud_product
 from app.schemas import product as schema_product
-from fastapi.responses import HTMLResponse
+from app.services.image_service import image_service
+from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
-from typing import Optional
+from typing import Optional, List
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
@@ -95,4 +96,99 @@ async def contact_post(
         "request": request,
         "success": True,
         "message": "Thank you for your message! We'll get back to you soon."
+    })
+
+@router.post("/upload-image/{product_type}/{product_id}")
+async def upload_product_image(
+    product_type: str,
+    product_id: int,
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db)
+):
+    """Upload an image for a product (bicycle or accessory)"""
+    
+    # Validate product type
+    if product_type not in ['bicycle', 'accessory']:
+        raise HTTPException(status_code=400, detail="Invalid product type")
+    
+    # Verify product exists
+    if product_type == 'bicycle':
+        product = crud_product.get_bicycle(db, product_id)
+    else:
+        product = crud_product.get_accessory(db, product_id)
+    
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    try:
+        # Save the image using the image service
+        result = await image_service.save_image(file, product_id, product_type)
+        
+        # Update the product's primary image if it doesn't have one
+        if not product.image and result['success']:
+            update_data = {"image": result['primary_path']}
+            if product_type == 'bicycle':
+                crud_product.update_bicycle(db, product_id, update_data)
+            else:
+                crud_product.update_accessory(db, product_id, update_data)
+        
+        return JSONResponse(content={
+            "success": True,
+            "message": "Image uploaded successfully",
+            "image_url": result['primary_path'],
+            "paths": result['paths']
+        })
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/product-images/{product_type}/{product_id}")
+async def get_product_images(product_type: str, product_id: int):
+    """Get all images for a product"""
+    
+    if product_type not in ['bicycle', 'accessory']:
+        raise HTTPException(status_code=400, detail="Invalid product type")
+    
+    images = image_service.get_product_images(product_id, product_type)
+    defaults = image_service.get_default_images()
+    
+    # If no images found, return default
+    if not images:
+        default_key = product_type if product_type in defaults else 'no_image'
+        images = [defaults[default_key]]
+    
+    return JSONResponse(content={
+        "images": images,
+        "count": len(images)
+    })
+
+@router.delete("/product-images/{product_type}/{product_id}")
+async def delete_product_images(product_type: str, product_id: int, db: Session = Depends(get_db)):
+    """Delete all images for a product"""
+    
+    if product_type not in ['bicycle', 'accessory']:
+        raise HTTPException(status_code=400, detail="Invalid product type")
+    
+    # Delete physical files
+    image_service.delete_product_images(product_id, product_type)
+    
+    # Clear the image field in the database
+    update_data = {"image": None}
+    if product_type == 'bicycle':
+        crud_product.update_bicycle(db, product_id, update_data)
+    else:
+        crud_product.update_accessory(db, product_id, update_data)
+    
+    return JSONResponse(content={"success": True, "message": "Images deleted successfully"})
+
+@router.get("/admin/products", response_class=HTMLResponse)
+async def admin_products(request: Request, db: Session = Depends(get_db)):
+    """Simple admin page for managing products and images"""
+    bicycles = crud_product.get_bicycles(db)
+    accessories = crud_product.get_accessories(db)
+    
+    return templates.TemplateResponse("admin/products.html", {
+        "request": request,
+        "bicycles": bicycles,
+        "accessories": accessories
     })

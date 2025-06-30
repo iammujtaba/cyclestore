@@ -58,3 +58,25 @@ def get_categories(db: Session, product_type: str = "bicycle"):
 def get_sizes(db: Session):
     result = db.query(Bicycle.size).distinct().all()
     return [row[0] for row in result if row[0]]
+
+def update_bicycle(db: Session, bicycle_id: int, bicycle_data: dict):
+    """Update a bicycle record"""
+    db_bike = db.query(Bicycle).filter(Bicycle.id == bicycle_id).first()
+    if db_bike:
+        for key, value in bicycle_data.items():
+            if hasattr(db_bike, key):
+                setattr(db_bike, key, value)
+        db.commit()
+        db.refresh(db_bike)
+    return db_bike
+
+def update_accessory(db: Session, accessory_id: int, accessory_data: dict):
+    """Update an accessory record"""
+    db_accessory = db.query(Accessory).filter(Accessory.id == accessory_id).first()
+    if db_accessory:
+        for key, value in accessory_data.items():
+            if hasattr(db_accessory, key):
+                setattr(db_accessory, key, value)
+        db.commit()
+        db.refresh(db_accessory)
+    return db_accessory
