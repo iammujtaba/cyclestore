@@ -1,0 +1,248 @@
+{% extends "base.html" %}
+
+{% block title %}Accessories - Supreme Cycle and Rickshaw Company{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<section class="bg-gradient-to-r from-secondary to-green-700 text-white py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4">Bicycle Accessories</h1>
+            <p class="text-xl text-green-100">Enhance your cycling experience with premium accessories</p>
+        </div>
+    </div>
+</section>
+
+<!-- Categories and Products -->
+<section class="py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Category Filter -->
+        <div class="mb-8">
+            <div class="flex flex-wrap justify-center gap-4">
+                <a href="/accessories" class="px-6 py-2 rounded-full border-2 transition-colors {% if not current_category %}bg-secondary text-white border-secondary{% else %}text-secondary border-secondary hover:bg-secondary hover:text-white{% endif %}">
+                    All Categories
+                </a>
+                {% for category in categories %}
+                <a href="/accessories?category={{ category }}" class="px-6 py-2 rounded-full border-2 transition-colors capitalize {% if current_category == category %}bg-secondary text-white border-secondary{% else %}text-secondary border-secondary hover:bg-secondary hover:text-white{% endif %}">
+                    {{ category }}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <div class="flex justify-between items-center mb-8">
+            <h2 class="text-2xl font-semibold text-gray-800">
+                {{ accessories|length }} Accessor{% if accessories|length != 1 %}ies{% else %}y{% endif %} Found
+                {% if current_category %}
+                in {{ current_category.title() }}
+                {% endif %}
+            </h2>
+            <div class="flex items-center space-x-2">
+                <span class="text-sm text-gray-600">Sort by:</span>
+                <select class="border border-gray-300 rounded px-3 py-1 text-sm" id="sort-select">
+                    <option value="name">Name</option>
+                    <option value="price-low">Price: Low to High</option>
+                    <option value="price-high">Price: High to Low</option>
+                </select>
+            </div>
+        </div>
+        
+        {% if accessories %}
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" id="accessories-grid">
+            {% for accessory in accessories %}
+            <div class="bg-white rounded-lg shadow-md overflow-hidden card-hover animate-on-scroll" data-name="{{ accessory.name.lower() }}" data-price="{{ accessory.price }}">
+                <div class="h-48 bg-gradient-to-r from-gray-100 to-gray-200 flex items-center justify-center relative">
+                    {% if accessory.category == 'tyres' %}
+                        <i class="fas fa-circle text-6xl text-gray-400"></i>
+                    {% elif accessory.category == 'tubes' %}
+                        <i class="fas fa-ring text-6xl text-gray-400"></i>
+                    {% elif accessory.category == 'rims' %}
+                        <i class="fas fa-compact-disc text-6xl text-gray-400"></i>
+                    {% elif accessory.category == 'chains' %}
+                        <i class="fas fa-link text-6xl text-gray-400"></i>
+                    {% elif accessory.category == 'forks' %}
+                        <i class="fas fa-expand-arrows-alt text-6xl text-gray-400"></i>
+                    {% elif accessory.category == 'lights' %}
+                        <i class="fas fa-lightbulb text-6xl text-gray-400"></i>
+                    {% else %}
+                        <i class="fas fa-cog text-6xl text-gray-400"></i>
+                    {% endif %}
+                    {% if accessory.in_stock %}
+                    <span class="absolute top-2 right-2 bg-green-500 text-white px-2 py-1 rounded text-xs">In Stock</span>
+                    {% else %}
+                    <span class="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded text-xs">Out of Stock</span>
+                    {% endif %}
+                </div>
+                <div class="p-4">
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="text-lg font-semibold text-gray-800">{{ accessory.name }}</h3>
+                        <span class="bg-secondary text-white px-2 py-1 rounded text-xs">{{ accessory.category.title() }}</span>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-3">{{ accessory.description[:80] }}...</p>
+                    
+                    <div class="mb-3">
+                        <div class="text-sm text-gray-600">
+                            <span class="font-medium">Size:</span> {{ accessory.size }}
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-between items-center">
+                        <span class="text-xl font-bold text-secondary">₹{{ accessory.price }}</span>
+                        <button class="bg-secondary text-white px-3 py-2 rounded text-sm hover:bg-green-600 transition-colors add-to-cart {% if not accessory.in_stock %}opacity-50 cursor-not-allowed{% endif %}" data-id="{{ accessory.id }}" {% if not accessory.in_stock %}disabled{% endif %}>
+                            <i class="fas fa-cart-plus"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-12">
+            <i class="fas fa-search text-6xl text-gray-300 mb-4"></i>
+            <h3 class="text-xl font-semibold text-gray-700 mb-2">No accessories found</h3>
+            <p class="text-gray-500 mb-4">Try browsing other categories</p>
+            <a href="/accessories" class="text-secondary hover:text-green-700 font-semibold">View all accessories</a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Popular Categories -->
+<section class="py-16 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Shop by Category</h2>
+            <p class="text-gray-600">Find exactly what you need for your bicycle</p>
+        </div>
+        
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+            <a href="/accessories?category=tyres" class="group text-center p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
+                <div class="bg-red-100 text-red-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-red-200 transition-colors">
+                    <i class="fas fa-circle text-2xl"></i>
+                </div>
+                <h3 class="font-semibold text-gray-800">Tyres</h3>
+            </a>
+            
+            <a href="/accessories?category=tubes" class="group text-center p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
+                <div class="bg-blue-100 text-blue-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-blue-200 transition-colors">
+                    <i class="fas fa-ring text-2xl"></i>
+                </div>
+                <h3 class="font-semibold text-gray-800">Tubes</h3>
+            </a>
+            
+            <a href="/accessories?category=rims" class="group text-center p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
+                <div class="bg-purple-100 text-purple-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-purple-200 transition-colors">
+                    <i class="fas fa-compact-disc text-2xl"></i>
+                </div>
+                <h3 class="font-semibold text-gray-800">Rims</h3>
+            </a>
+            
+            <a href="/accessories?category=chains" class="group text-center p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
+                <div class="bg-yellow-100 text-yellow-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-yellow-200 transition-colors">
+                    <i class="fas fa-link text-2xl"></i>
+                </div>
+                <h3 class="font-semibold text-gray-800">Chains</h3>
+            </a>
+            
+            <a href="/accessories?category=forks" class="group text-center p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
+                <div class="bg-green-100 text-green-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-green-200 transition-colors">
+                    <i class="fas fa-expand-arrows-alt text-2xl"></i>
+                </div>
+                <h3 class="font-semibold text-gray-800">Forks</h3>
+            </a>
+            
+            <a href="/accessories?category=lights" class="group text-center p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
+                <div class="bg-orange-100 text-orange-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-orange-200 transition-colors">
+                    <i class="fas fa-lightbulb text-2xl"></i>
+                </div>
+                <h3 class="font-semibold text-gray-800">Lights</h3>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Why Choose Our Accessories -->
+<section class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">Why Choose Our Accessories?</h2>
+            <p class="text-gray-600">Quality accessories that enhance your cycling experience</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="text-center">
+                <div class="bg-secondary text-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-award text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-3">Premium Quality</h3>
+                <p class="text-gray-600">All accessories are sourced from trusted manufacturers and tested for durability.</p>
+            </div>
+            
+            <div class="text-center">
+                <div class="bg-secondary text-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-wrench text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-3">Expert Installation</h3>
+                <p class="text-gray-600">Free installation service for all accessories purchased from our store.</p>
+            </div>
+            
+            <div class="text-center">
+                <div class="bg-secondary text-white w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-shield-alt text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-3">Warranty Protection</h3>
+                <p class="text-gray-600">All accessories come with manufacturer warranty and our satisfaction guarantee.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+$(document).ready(function() {
+    // Sort functionality
+    $('#sort-select').change(function() {
+        var sortBy = $(this).val();
+        var $grid = $('#accessories-grid');
+        var $products = $grid.children('.card-hover').get();
+        
+        $products.sort(function(a, b) {
+            if (sortBy === 'name') {
+                var aName = $(a).data('name');
+                var bName = $(b).data('name');
+                return aName.localeCompare(bName);
+            } else if (sortBy === 'price-low') {
+                return $(a).data('price') - $(b).data('price');
+            } else if (sortBy === 'price-high') {
+                return $(b).data('price') - $(a).data('price');
+            }
+        });
+        
+        $.each($products, function(index, item) {
+            $grid.append(item);
+        });
+    });
+    
+    // Add to cart functionality
+    $('.add-to-cart').click(function() {
+        var accessoryId = $(this).data('id');
+        var $button = $(this);
+        
+        if ($button.prop('disabled')) {
+            return;
+        }
+        
+        // Simple animation
+        $button.html('<i class="fas fa-check"></i>');
+        $button.removeClass('bg-secondary').addClass('bg-green-600');
+        
+        setTimeout(function() {
+            $button.html('<i class="fas fa-cart-plus"></i>');
+            $button.removeClass('bg-green-600').addClass('bg-secondary');
+        }, 1000);
+        
+        // Here you would typically send an AJAX request to add the item to cart
+        console.log('Added accessory ' + accessoryId + ' to cart');
+    });
+});
+</script>
+{% endblock %}
