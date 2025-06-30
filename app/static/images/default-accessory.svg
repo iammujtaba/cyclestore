@@ -1,0 +1,22 @@
+<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="300" fill="#f3f4f6"/>
+  <g fill="#9ca3af">
+    <!-- Accessory Icon (Gear/Wrench) -->
+    <circle cx="200" cy="150" r="30" fill="none" stroke="#6b7280" stroke-width="3"/>
+    <circle cx="200" cy="150" r="15" fill="none" stroke="#6b7280" stroke-width="2"/>
+    <path d="M200 120 L205 130 L195 130 Z" fill="#6b7280"/>
+    <path d="M200 180 L205 170 L195 170 Z" fill="#6b7280"/>
+    <path d="M170 150 L180 155 L180 145 Z" fill="#6b7280"/>
+    <path d="M230 150 L220 155 L220 145 Z" fill="#6b7280"/>
+    <path d="M177 133 L184 140 L176 148 Z" fill="#6b7280"/>
+    <path d="M223 167 L216 160 L224 152 Z" fill="#6b7280"/>
+    <path d="M177 167 L184 160 L176 152 Z" fill="#6b7280"/>
+    <path d="M223 133 L216 140 L224 148 Z" fill="#6b7280"/>
+  </g>
+  <text x="200" y="220" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#6b7280">
+    Accessory Image
+  </text>
+  <text x="200" y="240" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#9ca3af">
+    Supreme Cycle & Rickshaw Co.
+  </text>
+</svg>
