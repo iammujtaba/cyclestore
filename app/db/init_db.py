@@ -25,7 +25,7 @@ def seed_database():
             image="/static/images/mountain-bike-1.jpg",
             size="large",
             brand="Supreme",
-            description="Professional mountain bike with advanced suspension and durable frame.",
+            description="Professional mountain bike with advanced suspension and durable frame. BSA quality since 1999.",
             features=["21-speed gear", "Shock absorber", "Disc brakes", "Aluminum frame"],
             in_stock=True
         ),
