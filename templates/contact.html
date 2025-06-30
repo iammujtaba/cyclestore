@@ -1,0 +1,271 @@
+{% extends "base.html" %}
+
+{% block title %}Contact Us - Supreme Cycle and Rickshaw Company{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="bg-gradient-to-r from-accent to-yellow-700 text-white py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4">Contact Us</h1>
+            <p class="text-xl text-yellow-100">Get in touch with us for any questions or assistance</p>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Information -->
+<section class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {% if success %}
+        <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-8 animate-fade-in">
+            <div class="flex items-center">
+                <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                <span class="text-green-700">{{ message }}</span>
+            </div>
+        </div>
+        {% endif %}
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            <!-- Contact Form -->
+            <div class="animate-on-scroll">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6">Send us a Message</h2>
+                <p class="text-gray-600 mb-8">Have a question about our products or services? We'd love to hear from you. Send us a message and we'll respond as soon as possible.</p>
+                
+                <form method="post" class="space-y-6">
+                    <div>
+                        <label for="name" class="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
+                        <input type="text" id="name" name="name" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent transition-colors" placeholder="Enter your full name">
+                    </div>
+                    
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
+                        <input type="email" id="email" name="email" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent transition-colors" placeholder="Enter your email address">
+                    </div>
+                    
+                    <div>
+                        <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                        <input type="tel" id="phone" name="phone" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent transition-colors" placeholder="Enter your phone number">
+                    </div>
+                    
+                    <div>
+                        <label for="subject" class="block text-sm font-medium text-gray-700 mb-2">Subject</label>
+                        <select id="subject" name="subject" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent transition-colors">
+                            <option value="">Select a subject</option>
+                            <option value="general">General Inquiry</option>
+                            <option value="product">Product Question</option>
+                            <option value="service">Service Request</option>
+                            <option value="complaint">Complaint</option>
+                            <option value="feedback">Feedback</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="message" class="block text-sm font-medium text-gray-700 mb-2">Message *</label>
+                        <textarea id="message" name="message" rows="5" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-accent focus:border-transparent transition-colors" placeholder="Enter your message"></textarea>
+                    </div>
+                    
+                    <button type="submit" class="w-full bg-accent text-white py-3 px-6 rounded-lg font-semibold hover:bg-yellow-600 transition-colors">
+                        <i class="fas fa-paper-plane mr-2"></i>Send Message
+                    </button>
+                </form>
+            </div>
+            
+            <!-- Contact Information -->
+            <div class="animate-on-scroll">
+                <h2 class="text-3xl font-bold text-gray-800 mb-6">Get in Touch</h2>
+                <p class="text-gray-600 mb-8">Visit our store or contact us through any of the following methods. We're here to help you with all your cycling needs.</p>
+                
+                <div class="space-y-6">
+                    <div class="flex items-start">
+                        <div class="bg-accent text-white w-12 h-12 rounded-lg flex items-center justify-center mr-4 flex-shrink-0">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-800 mb-1">Store Address</h3>
+                            <p class="text-gray-600">Supreme Cycle and Rickshaw Company</p>
+                            <p class="text-gray-600">Mehdawal Road, Khalilabad</p>
+                            <p class="text-gray-600">Uttar Pradesh, India</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start">
+                        <div class="bg-accent text-white w-12 h-12 rounded-lg flex items-center justify-center mr-4 flex-shrink-0">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-800 mb-1">Phone Number</h3>
+                            <p class="text-gray-600">+91 98765 43210</p>
+                            <p class="text-gray-600 text-sm">Available: Mon-Sat, 9AM-8PM</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start">
+                        <div class="bg-accent text-white w-12 h-12 rounded-lg flex items-center justify-center mr-4 flex-shrink-0">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-800 mb-1">Email Address</h3>
+                            <p class="text-gray-600">info@supremecycle.com</p>
+                            <p class="text-gray-600">support@supremecycle.com</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start">
+                        <div class="bg-accent text-white w-12 h-12 rounded-lg flex items-center justify-center mr-4 flex-shrink-0">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-gray-800 mb-1">Store Hours</h3>
+                            <p class="text-gray-600">Monday - Saturday: 9:00 AM - 8:00 PM</p>
+                            <p class="text-gray-600">Sunday: Closed</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Social Media -->
+                <div class="mt-8">
+                    <h3 class="font-semibold text-gray-800 mb-4">Follow Us</h3>
+                    <div class="flex space-x-4">
+                        <a href="#" class="bg-blue-600 text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-blue-700 transition-colors">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="bg-pink-600 text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-pink-700 transition-colors">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="bg-blue-400 text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-blue-500 transition-colors">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="bg-red-600 text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-red-700 transition-colors">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Map Section -->
+<section class="py-16 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-8">
+            <h2 class="text-3xl font-bold text-gray-800 mb-4">Find Our Store</h2>
+            <p class="text-gray-600">Located in the heart of Khalilabad, easily accessible by all modes of transport</p>
+        </div>
+        
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+            <div class="h-96 bg-gradient-to-r from-gray-200 to-gray-300 flex items-center justify-center">
+                <div class="text-center">
+                    <i class="fas fa-map text-6xl text-gray-400 mb-4"></i>
+                    <p class="text-gray-500 mb-2">Interactive Map</p>
+                    <p class="text-gray-400 text-sm">Supreme Cycle Store - Mehdawal Road, Khalilabad</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ Section -->
+<section class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-gray-800 mb-4">Frequently Asked Questions</h2>
+            <p class="text-gray-600">Quick answers to common questions</p>
+        </div>
+        
+        <div class="max-w-3xl mx-auto">
+            <div class="space-y-4">
+                <div class="border border-gray-200 rounded-lg">
+                    <button class="faq-button w-full px-6 py-4 text-left flex justify-between items-center focus:outline-none" data-target="faq1">
+                        <span class="font-semibold text-gray-800">What are your store hours?</span>
+                        <i class="fas fa-chevron-down transform transition-transform"></i>
+                    </button>
+                    <div id="faq1" class="faq-content hidden px-6 pb-4">
+                        <p class="text-gray-600">We are open Monday through Saturday from 9:00 AM to 8:00 PM. We are closed on Sundays.</p>
+                    </div>
+                </div>
+                
+                <div class="border border-gray-200 rounded-lg">
+                    <button class="faq-button w-full px-6 py-4 text-left flex justify-between items-center focus:outline-none" data-target="faq2">
+                        <span class="font-semibold text-gray-800">Do you offer bicycle assembly service?</span>
+                        <i class="fas fa-chevron-down transform transition-transform"></i>
+                    </button>
+                    <div id="faq2" class="faq-content hidden px-6 pb-4">
+                        <p class="text-gray-600">Yes, we provide free professional assembly service for all bicycles purchased from our store. The assembly is done by our certified technicians.</p>
+                    </div>
+                </div>
+                
+                <div class="border border-gray-200 rounded-lg">
+                    <button class="faq-button w-full px-6 py-4 text-left flex justify-between items-center focus:outline-none" data-target="faq3">
+                        <span class="font-semibold text-gray-800">Do you provide home delivery?</span>
+                        <i class="fas fa-chevron-down transform transition-transform"></i>
+                    </button>
+                    <div id="faq3" class="faq-content hidden px-6 pb-4">
+                        <p class="text-gray-600">Yes, we offer home delivery service within Khalilabad and surrounding areas. Delivery charges may apply based on the distance.</p>
+                    </div>
+                </div>
+                
+                <div class="border border-gray-200 rounded-lg">
+                    <button class="faq-button w-full px-6 py-4 text-left flex justify-between items-center focus:outline-none" data-target="faq4">
+                        <span class="font-semibold text-gray-800">What warranty do you provide?</span>
+                        <i class="fas fa-chevron-down transform transition-transform"></i>
+                    </button>
+                    <div id="faq4" class="faq-content hidden px-6 pb-4">
+                        <p class="text-gray-600">We provide manufacturer warranty on all bicycles and accessories. Typically, frames come with 2 years warranty, components with 1 year, and accessories with 6 months warranty.</p>
+                    </div>
+                </div>
+                
+                <div class="border border-gray-200 rounded-lg">
+                    <button class="faq-button w-full px-6 py-4 text-left flex justify-between items-center focus:outline-none" data-target="faq5">
+                        <span class="font-semibold text-gray-800">Do you offer bicycle repair services?</span>
+                        <i class="fas fa-chevron-down transform transition-transform"></i>
+                    </button>
+                    <div id="faq5" class="faq-content hidden px-6 pb-4">
+                        <p class="text-gray-600">Yes, we have a fully equipped service center with experienced technicians who can handle all types of bicycle repairs and maintenance.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+$(document).ready(function() {
+    // FAQ accordion functionality
+    $('.faq-button').click(function() {
+        var target = $(this).data('target');
+        var $content = $('#' + target);
+        var $icon = $(this).find('i');
+        
+        // Close all other FAQ items
+        $('.faq-content').not($content).addClass('hidden');
+        $('.faq-button i').not($icon).removeClass('rotate-180');
+        
+        // Toggle current FAQ item
+        $content.toggleClass('hidden');
+        $icon.toggleClass('rotate-180');
+    });
+    
+    // Form validation
+    $('form').submit(function(e) {
+        var name = $('#name').val().trim();
+        var email = $('#email').val().trim();
+        var message = $('#message').val().trim();
+        
+        if (!name || !email || !message) {
+            e.preventDefault();
+            alert('Please fill in all required fields.');
+            return false;
+        }
+        
+        // Simple email validation
+        var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            e.preventDefault();
+            alert('Please enter a valid email address.');
+            return false;
+        }
+    });
+});
+</script>
+{% endblock %}

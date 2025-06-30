@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+
+{% block title %}Bicycles - Supreme Cycle and Rickshaw Company{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<section class="bg-gradient-to-r from-primary to-blue-700 text-white py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-4">Our Bicycle Collection</h1>
+            <p class="text-xl text-blue-100">Find the perfect bike for every adventure and lifestyle</p>
+        </div>
+    </div>
+</section>
+
+<!-- Filters and Products -->
+<section class="py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <!-- Filters Sidebar -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-lg shadow-md p-6 sticky top-24">
+                    <h3 class="text-xl font-semibold mb-6 text-gray-800">Filter Bicycles</h3>
+                    
+                    <form method="get" id="filter-form">
+                        <!-- Category Filter -->
+                        <div class="mb-6">
+                            <label class="block text-sm font-medium text-gray-700 mb-3">Category</label>
+                            <div class="space-y-2">
+                                <label class="flex items-center">
+                                    <input type="radio" name="category" value="" class="mr-2" {% if not current_category %}checked{% endif %}>
+                                    <span class="text-sm">All Categories</span>
+                                </label>
+                                {% for category in categories %}
+                                <label class="flex items-center">
+                                    <input type="radio" name="category" value="{{ category }}" class="mr-2" {% if current_category == category %}checked{% endif %}>
+                                    <span class="text-sm capitalize">{{ category }}</span>
+                                </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <!-- Size Filter -->
+                        <div class="mb-6">
+                            <label class="block text-sm font-medium text-gray-700 mb-3">Size</label>
+                            <div class="space-y-2">
+                                <label class="flex items-center">
+                                    <input type="radio" name="size" value="" class="mr-2" {% if not current_size %}checked{% endif %}>
+                                    <span class="text-sm">All Sizes</span>
+                                </label>
+                                {% for size in sizes %}
+                                <label class="flex items-center">
+                                    <input type="radio" name="size" value="{{ size }}" class="mr-2" {% if current_size == size %}checked{% endif %}>
+                                    <span class="text-sm capitalize">{{ size }}</span>
+                                </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <!-- Price Filter -->
+                        <div class="mb-6">
+                            <label class="block text-sm font-medium text-gray-700 mb-3">Price Range</label>
+                            <div class="space-y-3">
+                                <div>
+                                    <label class="block text-xs text-gray-500 mb-1">Min Price (₹)</label>
+                                    <input type="number" name="min_price" value="{{ current_min_price or '' }}" placeholder="0" class="w-full border border-gray-300 rounded px-3 py-2 text-sm">
+                                </div>
+                                <div>
+                                    <label class="block text-xs text-gray-500 mb-1">Max Price (₹)</label>
+                                    <input type="number" name="max_price" value="{{ current_max_price or '' }}" placeholder="50000" class="w-full border border-gray-300 rounded px-3 py-2 text-sm">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="w-full bg-primary text-white py-2 px-4 rounded hover:bg-blue-700 transition-colors">
+                            Apply Filters
+                        </button>
+                        
+                        <a href="/bicycles" class="block w-full text-center bg-gray-200 text-gray-700 py-2 px-4 rounded mt-2 hover:bg-gray-300 transition-colors">
+                            Clear Filters
+                        </a>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Products Grid -->
+            <div class="lg:col-span-3">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-semibold text-gray-800">
+                        {{ bicycles|length }} Bicycle{% if bicycles|length != 1 %}s{% endif %} Found
+                    </h2>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-sm text-gray-600">Sort by:</span>
+                        <select class="border border-gray-300 rounded px-3 py-1 text-sm" id="sort-select">
+                            <option value="name">Name</option>
+                            <option value="price-low">Price: Low to High</option>
+                            <option value="price-high">Price: High to Low</option>
+                        </select>
+                    </div>
+                </div>
+                
+                {% if bicycles %}
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6" id="products-grid">
+                    {% for bike in bicycles %}
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden card-hover animate-on-scroll" data-name="{{ bike.name.lower() }}" data-price="{{ bike.price }}">
+                        <div class="h-48 bg-gradient-to-r from-gray-100 to-gray-200 flex items-center justify-center relative">
+                            <i class="fas fa-bicycle text-6xl text-gray-400"></i>
+                            {% if bike.in_stock %}
+                            <span class="absolute top-2 right-2 bg-green-500 text-white px-2 py-1 rounded text-xs">In Stock</span>
+                            {% else %}
+                            <span class="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded text-xs">Out of Stock</span>
+                            {% endif %}
+                        </div>
+                        <div class="p-6">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="text-lg font-semibold text-gray-800">{{ bike.name }}</h3>
+                                <span class="bg-primary text-white px-2 py-1 rounded text-xs">{{ bike.category.title() }}</span>
+                            </div>
+                            <p class="text-gray-600 text-sm mb-3">{{ bike.description[:100] }}...</p>
+                            
+                            <div class="mb-4">
+                                <div class="flex flex-wrap gap-1 mb-2">
+                                    {% for feature in bike.features[:2] %}
+                                    <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs">{{ feature }}</span>
+                                    {% endfor %}
+                                    {% if bike.features|length > 2 %}
+                                    <span class="text-gray-500 text-xs">+{{ bike.features|length - 2 }} more</span>
+                                    {% endif %}
+                                </div>
+                                <div class="text-sm text-gray-600">
+                                    <span class="font-medium">Size:</span> {{ bike.size.title() }} | 
+                                    <span class="font-medium">Brand:</span> {{ bike.brand }}
+                                </div>
+                            </div>
+                            
+                            <div class="flex justify-between items-center">
+                                <span class="text-2xl font-bold text-primary">₹{{ "{:,}".format(bike.price) }}</span>
+                                <div class="flex space-x-2">
+                                    <a href="/bicycle/{{ bike.id }}" class="bg-primary text-white px-3 py-2 rounded text-sm hover:bg-blue-700 transition-colors">
+                                        View Details
+                                    </a>
+                                    <button class="bg-secondary text-white px-3 py-2 rounded text-sm hover:bg-green-600 transition-colors add-to-cart" data-id="{{ bike.id }}">
+                                        <i class="fas fa-cart-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-12">
+                    <i class="fas fa-search text-6xl text-gray-300 mb-4"></i>
+                    <h3 class="text-xl font-semibold text-gray-700 mb-2">No bicycles found</h3>
+                    <p class="text-gray-500 mb-4">Try adjusting your filters to see more results</p>
+                    <a href="/bicycles" class="text-primary hover:text-blue-700 font-semibold">Clear all filters</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+$(document).ready(function() {
+    // Sort functionality
+    $('#sort-select').change(function() {
+        var sortBy = $(this).val();
+        var $grid = $('#products-grid');
+        var $products = $grid.children('.card-hover').get();
+        
+        $products.sort(function(a, b) {
+            if (sortBy === 'name') {
+                var aName = $(a).data('name');
+                var bName = $(b).data('name');
+                return aName.localeCompare(bName);
+            } else if (sortBy === 'price-low') {
+                return $(a).data('price') - $(b).data('price');
+            } else if (sortBy === 'price-high') {
+                return $(b).data('price') - $(a).data('price');
+            }
+        });
+        
+        $.each($products, function(index, item) {
+            $grid.append(item);
+        });
+    });
+    
+    // Add to cart functionality
+    $('.add-to-cart').click(function() {
+        var bikeId = $(this).data('id');
+        var $button = $(this);
+        
+        // Simple animation
+        $button.html('<i class="fas fa-check"></i>');
+        $button.removeClass('bg-secondary').addClass('bg-green-600');
+        
+        setTimeout(function() {
+            $button.html('<i class="fas fa-cart-plus"></i>');
+            $button.removeClass('bg-green-600').addClass('bg-secondary');
+        }, 1000);
+        
+        // Here you would typically send an AJAX request to add the item to cart
+        console.log('Added bike ' + bikeId + ' to cart');
+    });
+    
+    // Auto-submit filter form on radio button change
+    $('input[type="radio"]').change(function() {
+        $('#filter-form').submit();
+    });
+});
+</script>
+{% endblock %}
