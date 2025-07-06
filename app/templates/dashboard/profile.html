@@ -1,0 +1,398 @@
+{% extends "base.html" %}
+
+{% block title %}Profile - Supreme Cycle & Rickshaw Co.{% endblock %}
+
+{% block head %}
+    <style>
+        .profile-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+        
+        .profile-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .profile-header h1 {
+            color: #1f2937;
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        .profile-header p {
+            color: #6b7280;
+            font-size: 1rem;
+        }
+        
+        .profile-nav {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .nav-item {
+            padding: 0.75rem 0;
+            font-weight: 500;
+            color: #6b7280;
+            text-decoration: none;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        
+        .nav-item:hover,
+        .nav-item.active {
+            color: #059669;
+            border-bottom-color: #059669;
+        }
+        
+        .profile-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+        
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            transition: border-color 0.2s;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #059669;
+            box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .form-group input:disabled {
+            background: #f9fafb;
+            color: #6b7280;
+            cursor: not-allowed;
+        }
+        
+        .btn-primary {
+            background: #059669;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .btn-primary:hover {
+            background: #047857;
+        }
+        
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-left: 0.5rem;
+        }
+        
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+        
+        .success-message {
+            background: #d1fae5;
+            border: 1px solid #059669;
+            color: #059669;
+            padding: 0.75rem;
+            border-radius: 6px;
+            margin-bottom: 1.5rem;
+            font-size: 0.875rem;
+        }
+        
+        .error-message {
+            background: #fee2e2;
+            border: 1px solid #dc2626;
+            color: #dc2626;
+            padding: 0.75rem;
+            border-radius: 6px;
+            margin-bottom: 1.5rem;
+            font-size: 0.875rem;
+        }
+        
+        .section-header {
+            grid-column: 1 / -1;
+            margin: 1.5rem 0 1rem 0;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .section-header h3 {
+            color: #374151;
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .user-info-section {
+            background: #f9fafb;
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 2rem;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .user-info-section h4 {
+            color: #374151;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .user-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        .user-info-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .user-info-item .label {
+            font-size: 0.75rem;
+            color: #6b7280;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .user-info-item .value {
+            color: #1f2937;
+            font-weight: 500;
+            margin-top: 0.25rem;
+        }
+        
+        @media (max-width: 640px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .profile-nav {
+                flex-wrap: wrap;
+                gap: 1rem;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <!-- Profile Header -->
+    <div class="profile-header">
+        <h1>User Profile</h1>
+        <p>Manage your account information and preferences</p>
+    </div>
+    
+    <!-- Profile Navigation -->
+    <nav class="profile-nav">
+        <a href="/dashboard" class="nav-item">Dashboard</a>
+        <a href="/profile" class="nav-item active">Profile</a>
+        <a href="/orders" class="nav-item">Orders</a>
+        <a href="/settings" class="nav-item">Settings</a>
+    </nav>
+    
+    <!-- Success/Error Messages -->
+    {% if success %}
+    <div class="success-message">
+        {{ success }}
+    </div>
+    {% endif %}
+    
+    {% if error %}
+    <div class="error-message">
+        {{ error }}
+    </div>
+    {% endif %}
+    
+    <!-- Current User Information -->
+    <div class="user-info-section">
+        <h4>Current Account Information</h4>
+        <div class="user-info-grid">
+            <div class="user-info-item">
+                <span class="label">Email</span>
+                <span class="value">{{ user.email }}</span>
+            </div>
+            <div class="user-info-item">
+                <span class="label">Username</span>
+                <span class="value">{{ user.username }}</span>
+            </div>
+            <div class="user-info-item">
+                <span class="label">Member Since</span>
+                <span class="value">{{ user.created_at.strftime('%B %d, %Y') }}</span>
+            </div>
+            <div class="user-info-item">
+                <span class="label">Last Login</span>
+                <span class="value">
+                    {% if user.last_login %}
+                        {{ user.last_login.strftime('%B %d, %Y at %I:%M %p') }}
+                    {% else %}
+                        Never
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Profile Update Form -->
+    <div class="profile-card">
+        <form method="POST" action="/profile">
+            <div class="form-grid">
+                <!-- Account Information (Read-only) -->
+                <div class="section-header">
+                    <h3>Account Information</h3>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" 
+                           id="email" 
+                           name="email" 
+                           value="{{ user.email }}"
+                           disabled
+                           title="Email cannot be changed">
+                </div>
+                
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" 
+                           id="username" 
+                           name="username" 
+                           value="{{ user.username }}"
+                           disabled
+                           title="Username cannot be changed">
+                </div>
+                
+                <!-- Personal Information -->
+                <div class="section-header">
+                    <h3>Personal Information</h3>
+                </div>
+                
+                <div class="form-group">
+                    <label for="first_name">First Name *</label>
+                    <input type="text" 
+                           id="first_name" 
+                           name="first_name" 
+                           value="{{ user.first_name }}"
+                           required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="last_name">Last Name *</label>
+                    <input type="text" 
+                           id="last_name" 
+                           name="last_name" 
+                           value="{{ user.last_name }}"
+                           required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" 
+                           id="phone" 
+                           name="phone" 
+                           value="{{ user.phone or '' }}"
+                           placeholder="Enter your phone number">
+                </div>
+                
+                <!-- Address Information -->
+                <div class="section-header">
+                    <h3>Address Information</h3>
+                </div>
+                
+                <div class="form-group full-width">
+                    <label for="address">Address</label>
+                    <textarea id="address" 
+                              name="address" 
+                              placeholder="Enter your complete address">{{ user.address or '' }}</textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="city">City</label>
+                    <input type="text" 
+                           id="city" 
+                           name="city" 
+                           value="{{ user.city or '' }}"
+                           placeholder="Enter your city">
+                </div>
+                
+                <div class="form-group">
+                    <label for="state">State</label>
+                    <input type="text" 
+                           id="state" 
+                           name="state" 
+                           value="{{ user.state or '' }}"
+                           placeholder="Enter your state">
+                </div>
+                
+                <div class="form-group">
+                    <label for="pincode">PIN Code</label>
+                    <input type="text" 
+                           id="pincode" 
+                           name="pincode" 
+                           value="{{ user.pincode or '' }}"
+                           placeholder="Enter your PIN code">
+                </div>
+                
+                <!-- Form Actions -->
+                <div class="form-group full-width">
+                    <button type="submit" class="btn-primary">
+                        Update Profile
+                    </button>
+                    <a href="/dashboard" class="btn-secondary">
+                        Cancel
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
