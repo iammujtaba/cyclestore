@@ -51,7 +51,8 @@
         .user-dropdown, .guest-dropdown {
             opacity: 0;
             transform: translateY(-10px);
-            transition: all 0.2s ease-in-out;
+            transition: all 0.15s ease-in-out;
+            transition-delay: 0.1s;
             pointer-events: none;
             visibility: hidden;
         }
@@ -61,6 +62,7 @@
             transform: translateY(0);
             pointer-events: auto;
             visibility: visible;
+            transition-delay: 0s;
         }
         
         .guest-menu-button:hover {
@@ -68,12 +70,20 @@
             border-radius: 6px;
         }
         
-        /* CSS-only hover fallback */
+        /* Expand clickable area for better UX */
+        .guest-menu-button, .user-menu-button {
+            position: relative;
+            padding: 8px 12px;
+            margin: -4px -8px;
+        }
+        
+        /* CSS-only hover fallback with better UX */
         .guest-menu:hover .guest-dropdown {
             opacity: 1;
             transform: translateY(0);
             pointer-events: auto;
             visibility: visible;
+            transition-delay: 0s;
         }
         
         .user-menu:hover .user-dropdown {
@@ -81,6 +91,27 @@
             transform: translateY(0);
             pointer-events: auto;
             visibility: visible;
+            transition-delay: 0s;
+        }
+        
+        /* Create invisible bridge to prevent gap issues */
+        .guest-dropdown::before, .user-dropdown::before {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: transparent;
+        }
+        
+        /* Ensure dropdown stays visible while hovering over it */
+        .guest-dropdown:hover, .user-dropdown:hover {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+            visibility: visible;
+            transition-delay: 0s;
         }
     </style>
     {% block head %}{% endblock %}
@@ -126,7 +157,7 @@
                         </button>
                         
                         <!-- Dropdown Menu -->
-                        <div class="user-dropdown absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-50">
+                        <div class="user-dropdown absolute right-0 mt-1 w-48 bg-white rounded-md shadow-lg z-50">
                             <div class="py-1">
                                 <a href="/dashboard" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                     <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
@@ -154,7 +185,7 @@
                         </button>
                         
                         <!-- Dropdown Menu -->
-                        <div class="guest-dropdown absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-50">
+                        <div class="guest-dropdown absolute right-0 mt-1 w-48 bg-white rounded-md shadow-lg z-50">
                             <div class="py-1">
                                 <a href="/login" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
                                     <i class="fas fa-sign-in-alt mr-2"></i>Sign In

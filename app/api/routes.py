@@ -40,7 +40,8 @@ async def bicycles(
     size: Optional[str] = None,
     min_price: Optional[int] = None,
     max_price: Optional[int] = None,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     filtered_bikes = crud_product.get_bicycles(db, category, size, min_price, max_price)
     categories = crud_product.get_categories(db, "bicycle")
@@ -54,14 +55,15 @@ async def bicycles(
         "current_category": category,
         "current_size": size,
         "current_min_price": min_price,
-        "current_max_price": max_price
+        "current_max_price": max_price,
+        "user": current_user
     })
 
 @router.get("/bicycle/{bicycle_id}", response_class=HTMLResponse)
-async def bicycle_detail(bicycle_id: int, request: Request, db: Session = Depends(get_db)):
+async def bicycle_detail(bicycle_id: int, request: Request, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     bicycle = crud_product.get_bicycle(db, bicycle_id)
     if not bicycle:
-        return templates.TemplateResponse("404.html", {"request": request})
+        return templates.TemplateResponse("404.html", {"request": request, "user": current_user})
     
     related_bikes = crud_product.get_bicycles(db, category=bicycle.category)
     related_bikes = [bike for bike in related_bikes if bike.id != bicycle_id][:3]
@@ -69,14 +71,16 @@ async def bicycle_detail(bicycle_id: int, request: Request, db: Session = Depend
     return templates.TemplateResponse("bicycle_detail.html", {
         "request": request,
         "bicycle": bicycle,
-        "related_bikes": related_bikes
+        "related_bikes": related_bikes,
+        "user": current_user
     })
 
 @router.get("/accessories", response_class=HTMLResponse)
 async def accessories(
     request: Request,
     category: Optional[str] = None,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     filtered_accessories = crud_product.get_accessories(db, category)
     categories = crud_product.get_categories(db, "accessory")
@@ -85,29 +89,32 @@ async def accessories(
         "request": request,
         "accessories": filtered_accessories,
         "categories": categories,
-        "current_category": category
+        "current_category": category,
+        "user": current_user
     })
 
 @router.get("/about", response_class=HTMLResponse)
-async def about(request: Request):
-    return templates.TemplateResponse("about.html", {"request": request})
+async def about(request: Request, current_user: User = Depends(get_current_user)):
+    return templates.TemplateResponse("about.html", {"request": request, "user": current_user})
 
 @router.get("/contact", response_class=HTMLResponse)
-async def contact(request: Request):
-    return templates.TemplateResponse("contact.html", {"request": request})
+async def contact(request: Request, current_user: User = Depends(get_current_user)):
+    return templates.TemplateResponse("contact.html", {"request": request, "user": current_user})
 
 @router.post("/contact", response_class=HTMLResponse)
 async def contact_post(
     request: Request,
     name: str = Form(...),
     email: str = Form(...),
-    message: str = Form(...)
+    message: str = Form(...),
+    current_user: User = Depends(get_current_user)
 ):
     # In a real app, you would save this to a database or send an email
     return templates.TemplateResponse("contact.html", {
         "request": request,
         "success": True,
-        "message": "Thank you for your message! We'll get back to you soon."
+        "message": "Thank you for your message! We'll get back to you soon.",
+        "user": current_user
     })
 
 @router.post("/upload-image/{product_type}/{product_id}")
@@ -194,7 +201,7 @@ async def delete_product_images(product_type: str, product_id: int, db: Session 
     return JSONResponse(content={"success": True, "message": "Images deleted successfully"})
 
 @router.get("/admin/products", response_class=HTMLResponse)
-async def admin_products(request: Request, db: Session = Depends(get_db)):
+async def admin_products(request: Request, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     """Simple admin page for managing products and images"""
     bicycles = crud_product.get_bicycles(db)
     accessories = crud_product.get_accessories(db)
@@ -202,7 +209,8 @@ async def admin_products(request: Request, db: Session = Depends(get_db)):
     return templates.TemplateResponse("admin/products.html", {
         "request": request,
         "bicycles": bicycles,
-        "accessories": accessories
+        "accessories": accessories,
+        "user": current_user
     })
 
 # Authentication Routes
