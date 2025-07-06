@@ -1,0 +1,366 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Supreme Cycle & Rickshaw Co.{% endblock %}
+
+{% block head %}
+    <style>
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+        
+        .dashboard-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .dashboard-header h1 {
+            color: #1f2937;
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        .dashboard-header p {
+            color: #6b7280;
+            font-size: 1rem;
+        }
+        
+        .dashboard-nav {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .nav-item {
+            padding: 0.75rem 0;
+            font-weight: 500;
+            color: #6b7280;
+            text-decoration: none;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        
+        .nav-item:hover,
+        .nav-item.active {
+            color: #059669;
+            border-bottom-color: #059669;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .user-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+        }
+        
+        .user-info h3 {
+            color: #1f2937;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .user-detail {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        
+        .user-detail:last-child {
+            border-bottom: none;
+        }
+        
+        .user-detail .label {
+            font-weight: 500;
+            color: #6b7280;
+        }
+        
+        .user-detail .value {
+            color: #1f2937;
+        }
+        
+        .quick-actions {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+        }
+        
+        .quick-actions h3 {
+            color: #1f2937;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        .action-card {
+            background: #f9fafb;
+            padding: 1rem;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+            text-align: center;
+            transition: all 0.2s;
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .action-card:hover {
+            background: #f3f4f6;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .action-card i {
+            font-size: 2rem;
+            color: #059669;
+            margin-bottom: 0.5rem;
+        }
+        
+        .action-card h4 {
+            color: #1f2937;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .action-card p {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+        
+        .featured-section {
+            margin-top: 3rem;
+        }
+        
+        .featured-section h2 {
+            color: #1f2937;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+        
+        .featured-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .featured-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+            transition: transform 0.2s;
+        }
+        
+        .featured-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .featured-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+        
+        .featured-card-content {
+            padding: 1rem;
+        }
+        
+        .featured-card h4 {
+            color: #1f2937;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .featured-card .price {
+            color: #059669;
+            font-weight: 600;
+            font-size: 1.125rem;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .status-verified {
+            background: #d1fae5;
+            color: #059669;
+        }
+        
+        .status-pending {
+            background: #fef3c7;
+            color: #d97706;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .dashboard-nav {
+                flex-wrap: wrap;
+                gap: 1rem;
+            }
+            
+            .action-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Dashboard Header -->
+    <div class="dashboard-header">
+        <h1>Welcome back, {{ user.first_name }}!</h1>
+        <p>Manage your account and explore our latest products</p>
+    </div>
+    
+    <!-- Dashboard Navigation -->
+    <nav class="dashboard-nav">
+        <a href="/dashboard" class="nav-item active">Dashboard</a>
+        <a href="/profile" class="nav-item">Profile</a>
+        <a href="/orders" class="nav-item">Orders</a>
+        <a href="/wishlist" class="nav-item">Wishlist</a>
+        <a href="/settings" class="nav-item">Settings</a>
+    </nav>
+    
+    <!-- Main Dashboard Content -->
+    <div class="dashboard-grid">
+        <!-- User Information Card -->
+        <div class="user-card">
+            <div class="user-info">
+                <h3>Account Information</h3>
+                <div class="user-details">
+                    <div class="user-detail">
+                        <span class="label">Full Name:</span>
+                        <span class="value">{{ user.full_name }}</span>
+                    </div>
+                    <div class="user-detail">
+                        <span class="label">Email:</span>
+                        <span class="value">{{ user.email }}</span>
+                    </div>
+                    <div class="user-detail">
+                        <span class="label">Username:</span>
+                        <span class="value">{{ user.username }}</span>
+                    </div>
+                    <div class="user-detail">
+                        <span class="label">Member Since:</span>
+                        <span class="value">{{ user.created_at.strftime('%B %Y') }}</span>
+                    </div>
+                    <div class="user-detail">
+                        <span class="label">Status:</span>
+                        <span class="value">
+                            {% if user.is_verified %}
+                                <span class="status-badge status-verified">Verified</span>
+                            {% else %}
+                                <span class="status-badge status-pending">Pending Verification</span>
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <h3>Quick Actions</h3>
+            <div class="action-grid">
+                <a href="/profile" class="action-card">
+                    <i class="fas fa-user-edit"></i>
+                    <h4>Edit Profile</h4>
+                    <p>Update your personal information</p>
+                </a>
+                
+                <a href="/bicycles" class="action-card">
+                    <i class="fas fa-bicycle"></i>
+                    <h4>Browse Bicycles</h4>
+                    <p>Explore our bicycle collection</p>
+                </a>
+                
+                <a href="/accessories" class="action-card">
+                    <i class="fas fa-tools"></i>
+                    <h4>View Accessories</h4>
+                    <p>Check out bicycle accessories</p>
+                </a>
+                
+                <a href="/orders" class="action-card">
+                    <i class="fas fa-shopping-bag"></i>
+                    <h4>Order History</h4>
+                    <p>View your past orders</p>
+                </a>
+                
+                <a href="/contact" class="action-card">
+                    <i class="fas fa-phone"></i>
+                    <h4>Contact Support</h4>
+                    <p>Get help from our team</p>
+                </a>
+                
+                <a href="/logout" class="action-card">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <h4>Sign Out</h4>
+                    <p>Securely log out</p>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Featured Products -->
+    <div class="featured-section">
+        <h2>Featured Bicycles</h2>
+        <div class="featured-grid">
+            {% for bike in featured_bikes %}
+            <a href="/bicycle/{{ bike.id }}" class="featured-card">
+                <img src="{{ bike.get_primary_image() }}" alt="{{ bike.name }}">
+                <div class="featured-card-content">
+                    <h4>{{ bike.name }}</h4>
+                    <p class="price">₹{{ "{:,.0f}".format(bike.price) }}</p>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <div class="featured-section">
+        <h2>Featured Accessories</h2>
+        <div class="featured-grid">
+            {% for accessory in featured_accessories %}
+            <a href="/accessory/{{ accessory.id }}" class="featured-card">
+                <img src="{{ accessory.get_primary_image() }}" alt="{{ accessory.name }}">
+                <div class="featured-card-content">
+                    <h4>{{ accessory.name }}</h4>
+                    <p class="price">₹{{ "{:,.0f}".format(accessory.price) }}</p>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

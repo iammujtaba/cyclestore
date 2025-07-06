@@ -8,12 +8,18 @@ import os
 
 from app.config import settings
 from app.db.session import get_db, engine, Base
-from app.models.product import Bicycle, Accessory
+from app.models.product import Bicycle, Accessory, ProductImage
+from app.models.user import User, UserSession
+from app.api.routes import router as api_router
+from app.services.auth_service import auth_service
 
 # Create tables on startup
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title=settings.PROJECT_NAME)
+
+# Include API routes
+app.include_router(api_router)
 
 # Mount static files
 static_dir = os.path.join(os.path.dirname(__file__), "static")
