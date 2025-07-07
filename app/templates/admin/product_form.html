@@ -1,0 +1,474 @@
+{% extends "base.html" %}
+
+{% block title %}{{ 'Edit' if product else 'Add' }} {{ product_type|title }} - Admin Panel{% endblock %}
+
+{% block head %}
+    <style>
+        .admin-content {
+            background: #f8fafc;
+            min-height: 100vh;
+            padding-top: 2rem;
+        }
+        
+        .form-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            transition: border-color 0.2s;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #dc2626;
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+        }
+        
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        .btn-primary {
+            background: #dc2626;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-right: 1rem;
+        }
+        
+        .btn-primary:hover {
+            background: #b91c1c;
+        }
+        
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: background-color 0.2s;
+        }
+        
+        .btn-secondary:hover {
+            background: #4b5563;
+            color: white;
+        }
+        
+        .error-message {
+            background: #fee2e2;
+            border: 1px solid #fca5a5;
+            color: #dc2626;
+            padding: 0.75rem;
+            border-radius: 6px;
+            margin-bottom: 1.5rem;
+            font-size: 0.875rem;
+        }
+        
+        .success-message {
+            background: #d1fae5;
+            border: 1px solid #6ee7b7;
+            color: #047857;
+            padding: 0.75rem;
+            border-radius: 6px;
+            margin-bottom: 1.5rem;
+            font-size: 0.875rem;
+        }
+        
+        .features-input {
+            border: 2px solid #e5e7eb;
+            border-radius: 6px;
+            padding: 0.75rem;
+            min-height: 100px;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .feature-item input {
+            flex: 1;
+            margin-right: 0.5rem;
+            margin-bottom: 0;
+        }
+        
+        .remove-feature {
+            background: #dc2626;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 0.25rem 0.5rem;
+            cursor: pointer;
+            font-size: 0.75rem;
+        }
+        
+        .add-feature {
+            background: #059669;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-content">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="mb-6">
+            <h1 class="text-2xl font-bold text-gray-800">
+                <i class="fas fa-{{ 'bicycle' if product_type == 'bicycle' else 'tools' }} mr-2 text-red-600"></i>
+                {{ 'Edit' if product else 'Add' }} {{ product_type|title }}
+            </h1>
+            <p class="text-gray-600">{{ 'Update' if product else 'Create a new' }} {{ product_type }} in your inventory</p>
+        </div>
+        
+        <div class="form-container">
+            {% if error %}
+            <div class="error-message">
+                <i class="fas fa-exclamation-triangle mr-2"></i>{{ error }}
+            </div>
+            {% endif %}
+            
+            {% if success %}
+            <div class="success-message">
+                <i class="fas fa-check-circle mr-2"></i>{{ success }}
+            </div>
+            {% endif %}
+            
+            <form method="POST" action="{{ '/admin/' + product_type + 's/edit/' + product.id|string if product else '/admin/' + product_type + 's/add' }}">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="name">
+                            <i class="fas fa-tag mr-1"></i>Product Name *
+                        </label>
+                        <input type="text" 
+                               id="name" 
+                               name="name" 
+                               value="{{ product.name if product else (form_data.name if form_data else '') }}"
+                               required 
+                               placeholder="Enter {{ product_type }} name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="category">
+                            <i class="fas fa-folder mr-1"></i>Category *
+                        </label>
+                        <select id="category" name="category" required>
+                            <option value="">Select Category</option>
+                            {% if product_type == 'bicycle' %}
+                                <option value="mountain" {{ 'selected' if (product and product.category == 'mountain') or (form_data and form_data.category == 'mountain') }}>Mountain Bike</option>
+                                <option value="road" {{ 'selected' if (product and product.category == 'road') or (form_data and form_data.category == 'road') }}>Road Bike</option>
+                                <option value="hybrid" {{ 'selected' if (product and product.category == 'hybrid') or (form_data and form_data.category == 'hybrid') }}>Hybrid Bike</option>
+                                <option value="electric" {{ 'selected' if (product and product.category == 'electric') or (form_data and form_data.category == 'electric') }}>Electric Bike</option>
+                                <option value="kids" {{ 'selected' if (product and product.category == 'kids') or (form_data and form_data.category == 'kids') }}>Kids Bike</option>
+                                <option value="folding" {{ 'selected' if (product and product.category == 'folding') or (form_data and form_data.category == 'folding') }}>Folding Bike</option>
+                            {% else %}
+                                <option value="helmet" {{ 'selected' if (product and product.category == 'helmet') or (form_data and form_data.category == 'helmet') }}>Helmet</option>
+                                <option value="lock" {{ 'selected' if (product and product.category == 'lock') or (form_data and form_data.category == 'lock') }}>Lock</option>
+                                <option value="light" {{ 'selected' if (product and product.category == 'light') or (form_data and form_data.category == 'light') }}>Light</option>
+                                <option value="bag" {{ 'selected' if (product and product.category == 'bag') or (form_data and form_data.category == 'bag') }}>Bag</option>
+                                <option value="pump" {{ 'selected' if (product and product.category == 'pump') or (form_data and form_data.category == 'pump') }}>Pump</option>
+                                <option value="tool" {{ 'selected' if (product and product.category == 'tool') or (form_data and form_data.category == 'tool') }}>Tool</option>
+                                <option value="tire" {{ 'selected' if (product and product.category == 'tire') or (form_data and form_data.category == 'tire') }}>Tire</option>
+                                <option value="maintenance" {{ 'selected' if (product and product.category == 'maintenance') or (form_data and form_data.category == 'maintenance') }}>Maintenance</option>
+                            {% endif %}
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="price">
+                            <i class="fas fa-rupee-sign mr-1"></i>Price (₹) *
+                        </label>
+                        <input type="number" 
+                               id="price" 
+                               name="price" 
+                               value="{{ product.price if product else (form_data.price if form_data else '') }}"
+                               required 
+                               min="0"
+                               step="0.01"
+                               placeholder="Enter price">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="size">
+                            <i class="fas fa-ruler mr-1"></i>Size
+                        </label>
+                        <input type="text" 
+                               id="size" 
+                               name="size" 
+                               value="{{ product.size if product else (form_data.size if form_data else '') }}"
+                               placeholder="e.g., Medium, Large, 26 inch">
+                    </div>
+                    
+                    {% if product_type == 'bicycle' %}
+                    <div class="form-group">
+                        <label for="brand">
+                            <i class="fas fa-copyright mr-1"></i>Brand
+                        </label>
+                        <input type="text" 
+                               id="brand" 
+                               name="brand" 
+                               value="{{ product.brand if product else (form_data.brand if form_data else '') }}"
+                               placeholder="Enter brand name">
+                    </div>
+                    
+                    <!-- Extended Bicycle Fields -->
+                    <div class="form-group">
+                        <label for="frame_size">
+                            <i class="fas fa-expand-alt mr-1"></i>Frame Size
+                        </label>
+                        <select id="frame_size" name="frame_size">
+                            <option value="">Select Frame Size</option>
+                            <option value="XS" {{ 'selected' if (product and product.frame_size == 'XS') }}>XS (14-15 inch)</option>
+                            <option value="S" {{ 'selected' if (product and product.frame_size == 'S') }}>S (15-16 inch)</option>
+                            <option value="M" {{ 'selected' if (product and product.frame_size == 'M') }}>M (16-18 inch)</option>
+                            <option value="L" {{ 'selected' if (product and product.frame_size == 'L') }}>L (18-20 inch)</option>
+                            <option value="XL" {{ 'selected' if (product and product.frame_size == 'XL') }}>XL (20-22 inch)</option>
+                            <option value="XXL" {{ 'selected' if (product and product.frame_size == 'XXL') }}>XXL (22+ inch)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="wheel_size">
+                            <i class="fas fa-circle mr-1"></i>Wheel Size
+                        </label>
+                        <select id="wheel_size" name="wheel_size">
+                            <option value="">Select Wheel Size</option>
+                            <option value="16" {{ 'selected' if (product and product.wheel_size == '16') }}>16 inch</option>
+                            <option value="20" {{ 'selected' if (product and product.wheel_size == '20') }}>20 inch</option>
+                            <option value="24" {{ 'selected' if (product and product.wheel_size == '24') }}>24 inch</option>
+                            <option value="26" {{ 'selected' if (product and product.wheel_size == '26') }}>26 inch</option>
+                            <option value="27.5" {{ 'selected' if (product and product.wheel_size == '27.5') }}>27.5 inch</option>
+                            <option value="29" {{ 'selected' if (product and product.wheel_size == '29') }}>29 inch</option>
+                            <option value="700C" {{ 'selected' if (product and product.wheel_size == '700C') }}>700C</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="gear_count">
+                            <i class="fas fa-cog mr-1"></i>Number of Gears
+                        </label>
+                        <input type="number" 
+                               id="gear_count" 
+                               name="gear_count" 
+                               value="{{ product.gear_count if product else (form_data.gear_count if form_data else '') }}"
+                               min="1"
+                               max="30"
+                               placeholder="e.g., 21">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="brake_type">
+                            <i class="fas fa-hand-paper mr-1"></i>Brake Type
+                        </label>
+                        <select id="brake_type" name="brake_type">
+                            <option value="">Select Brake Type</option>
+                            <option value="Rim" {{ 'selected' if (product and product.brake_type == 'Rim') }}>Rim Brakes</option>
+                            <option value="Disc" {{ 'selected' if (product and product.brake_type == 'Disc') }}>Disc Brakes</option>
+                            <option value="Hydraulic" {{ 'selected' if (product and product.brake_type == 'Hydraulic') }}>Hydraulic Brakes</option>
+                            <option value="Mechanical" {{ 'selected' if (product and product.brake_type == 'Mechanical') }}>Mechanical Brakes</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="suspension">
+                            <i class="fas fa-arrows-alt-v mr-1"></i>Suspension
+                        </label>
+                        <select id="suspension" name="suspension">
+                            <option value="">Select Suspension</option>
+                            <option value="None" {{ 'selected' if (product and product.suspension == 'None') }}>No Suspension</option>
+                            <option value="Front" {{ 'selected' if (product and product.suspension == 'Front') }}>Front Suspension</option>
+                            <option value="Full" {{ 'selected' if (product and product.suspension == 'Full') }}>Full Suspension</option>
+                            <option value="Rear" {{ 'selected' if (product and product.suspension == 'Rear') }}>Rear Suspension</option>
+                        </select>
+                    </div>
+                    
+                    {% else %}
+                    <!-- Accessory Fields -->
+                    <div class="form-group">
+                        <label for="brand">
+                            <i class="fas fa-copyright mr-1"></i>Brand
+                        </label>
+                        <input type="text" 
+                               id="brand" 
+                               name="brand" 
+                               value="{{ product.brand if product else (form_data.brand if form_data else '') }}"
+                               placeholder="Enter brand name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="accessory_type">
+                            <i class="fas fa-tag mr-1"></i>Accessory Type
+                        </label>
+                        <select id="accessory_type" name="accessory_type">
+                            <option value="">Select Type</option>
+                            <option value="Safety" {{ 'selected' if (product and product.accessory_type == 'Safety') }}>Safety</option>
+                            <option value="Maintenance" {{ 'selected' if (product and product.accessory_type == 'Maintenance') }}>Maintenance</option>
+                            <option value="Storage" {{ 'selected' if (product and product.accessory_type == 'Storage') }}>Storage</option>
+                            <option value="Comfort" {{ 'selected' if (product and product.accessory_type == 'Comfort') }}>Comfort</option>
+                            <option value="Performance" {{ 'selected' if (product and product.accessory_type == 'Performance') }}>Performance</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="compatibility">
+                            <i class="fas fa-link mr-1"></i>Compatibility
+                        </label>
+                        <input type="text" 
+                               id="compatibility" 
+                               name="compatibility" 
+                               value="{{ product.compatibility if product else (form_data.compatibility if form_data else '') }}"
+                               placeholder="e.g., Universal, Mountain bikes, Road bikes">
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Common Admin Fields -->
+                    <div class="form-group">
+                        <label for="stock_quantity">
+                            <i class="fas fa-boxes mr-1"></i>Stock Quantity
+                        </label>
+                        <input type="number" 
+                               id="stock_quantity" 
+                               name="stock_quantity" 
+                               value="{{ product.stock_quantity if product else (form_data.stock_quantity if form_data else '10') }}"
+                               min="0"
+                               placeholder="Enter stock quantity">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" name="is_featured" value="1" {% if (product and product.is_featured) %}checked{% endif %}>
+                            <i class="fas fa-star mr-1"></i>Featured Product
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="description">
+                        <i class="fas fa-align-left mr-1"></i>Description
+                    </label>
+                    <textarea id="description" 
+                              name="description" 
+                              placeholder="Enter detailed description">{{ product.description if product else (form_data.description if form_data else '') }}</textarea>
+                </div>
+                
+                {% if product_type == 'bicycle' %}
+                <div class="form-group">
+                    <label>
+                        <i class="fas fa-list mr-1"></i>Features
+                    </label>
+                    <div class="features-input" id="features-container">
+                        {% if product and product.features %}
+                            {% for feature in product.features %}
+                            <div class="feature-item">
+                                <input type="text" name="features[]" value="{{ feature }}" placeholder="Enter feature">
+                                <button type="button" class="remove-feature" onclick="removeFeature(this)">Remove</button>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="feature-item">
+                                <input type="text" name="features[]" placeholder="Enter feature">
+                                <button type="button" class="remove-feature" onclick="removeFeature(this)">Remove</button>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <button type="button" class="add-feature" onclick="addFeature()">
+                        <i class="fas fa-plus mr-1"></i>Add Feature
+                    </button>
+                </div>
+                {% endif %}
+                
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" name="in_stock" value="1" {% if (product and product.in_stock) or not product %}checked{% endif %}>
+                        <i class="fas fa-box mr-1"></i>In Stock
+                    </label>
+                </div>
+                
+                <div class="flex justify-between items-center">
+                    <div>
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-save mr-2"></i>
+                            {{ 'Update' if product else 'Create' }} {{ product_type|title }}
+                        </button>
+                        <a href="/admin/products" class="btn-secondary">
+                            <i class="fas fa-arrow-left mr-2"></i>Cancel
+                        </a>
+                    </div>
+                    
+                    {% if product %}
+                    <a href="/admin/{{ product_type }}s/images/{{ product.id }}" class="btn-secondary">
+                        <i class="fas fa-images mr-2"></i>Manage Images
+                    </a>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function addFeature() {
+    const container = document.getElementById('features-container');
+    const featureItem = document.createElement('div');
+    featureItem.className = 'feature-item';
+    featureItem.innerHTML = `
+        <input type="text" name="features[]" placeholder="Enter feature">
+        <button type="button" class="remove-feature" onclick="removeFeature(this)">Remove</button>
+    `;
+    container.appendChild(featureItem);
+}
+
+function removeFeature(button) {
+    const container = document.getElementById('features-container');
+    if (container.children.length > 1) {
+        button.parentElement.remove();
+    }
+}
+</script>
+{% endblock %}

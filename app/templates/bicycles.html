@@ -116,20 +116,28 @@
                                 <h3 class="text-lg font-semibold text-gray-800">{{ bike.name }}</h3>
                                 <span class="bg-primary text-white px-2 py-1 rounded text-xs">{{ bike.category.title() }}</span>
                             </div>
-                            <p class="text-gray-600 text-sm mb-3">{{ bike.description[:100] }}...</p>
+                            <p class="text-gray-600 text-sm mb-3">
+                                {% if bike.description %}
+                                    {{ bike.description[:100] }}{% if bike.description|length > 100 %}...{% endif %}
+                                {% else %}
+                                    High-quality bicycle for your cycling needs.
+                                {% endif %}
+                            </p>
                             
                             <div class="mb-4">
                                 <div class="flex flex-wrap gap-1 mb-2">
-                                    {% for feature in bike.features[:2] %}
-                                    <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs">{{ feature }}</span>
-                                    {% endfor %}
-                                    {% if bike.features|length > 2 %}
-                                    <span class="text-gray-500 text-xs">+{{ bike.features|length - 2 }} more</span>
+                                    {% if bike.features %}
+                                        {% for feature in bike.features[:2] %}
+                                        <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs">{{ feature }}</span>
+                                        {% endfor %}
+                                        {% if bike.features|length > 2 %}
+                                        <span class="text-gray-500 text-xs">+{{ bike.features|length - 2 }} more</span>
+                                        {% endif %}
                                     {% endif %}
                                 </div>
                                 <div class="text-sm text-gray-600">
-                                    <span class="font-medium">Size:</span> {{ bike.size.title() }} | 
-                                    <span class="font-medium">Brand:</span> {{ bike.brand }}
+                                    <span class="font-medium">Size:</span> {{ bike.size.title() if bike.size else 'N/A' }} | 
+                                    <span class="font-medium">Brand:</span> {{ bike.brand or 'Supreme' }}
                                 </div>
                             </div>
                             

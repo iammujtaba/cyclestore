@@ -38,12 +38,28 @@ async def bicycles(
     request: Request,
     category: Optional[str] = None,
     size: Optional[str] = None,
-    min_price: Optional[int] = None,
-    max_price: Optional[int] = None,
+    min_price: Optional[str] = None,
+    max_price: Optional[str] = None,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
-    filtered_bikes = crud_product.get_bicycles(db, category, size, min_price, max_price)
+    # Convert price strings to integers, handling empty strings
+    min_price_int = None
+    max_price_int = None
+    
+    if min_price and min_price.strip():
+        try:
+            min_price_int = int(min_price)
+        except ValueError:
+            min_price_int = None
+    
+    if max_price and max_price.strip():
+        try:
+            max_price_int = int(max_price)
+        except ValueError:
+            max_price_int = None
+    
+    filtered_bikes = crud_product.get_bicycles(db, category, size, min_price_int, max_price_int)
     categories = crud_product.get_categories(db, "bicycle")
     sizes = crud_product.get_sizes(db)
     

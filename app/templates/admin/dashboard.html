@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Supreme Cycle & Rickshaw Co.{% endblock %}
+
+{% block head %}
+    <style>
+        .admin-dashboard {
+            background: #f8fafc;
+            min-height: 100vh;
+            padding-top: 2rem;
+        }
+        
+        .admin-header {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+        }
+        
+        .admin-nav {
+            background: #dc2626;
+            color: white;
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+        }
+        
+        .admin-nav a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            margin: 0 0.5rem;
+            border-radius: 6px;
+            transition: background-color 0.2s;
+        }
+        
+        .admin-nav a:hover, .admin-nav a.active {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #dc2626;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #dc2626;
+        }
+        
+        .stat-label {
+            color: #6b7280;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+        
+        .quick-actions {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .action-button {
+            display: inline-block;
+            background: #dc2626;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            text-decoration: none;
+            margin: 0.5rem 0.5rem 0.5rem 0;
+            transition: background-color 0.2s;
+        }
+        
+        .action-button:hover {
+            background: #b91c1c;
+            color: white;
+        }
+        
+        .action-button.secondary {
+            background: #059669;
+        }
+        
+        .action-button.secondary:hover {
+            background: #047857;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-dashboard">
+    <!-- Admin Header -->
+    <div class="admin-header">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-800">
+                        <i class="fas fa-cogs mr-2 text-red-600"></i>Admin Dashboard
+                    </h1>
+                    <p class="text-gray-600">Welcome back, {{ admin.full_name }}</p>
+                </div>
+                <div>
+                    <span class="text-sm text-gray-500">Last login: {{ admin.last_login.strftime('%Y-%m-%d %H:%M') if admin.last_login else 'First time' }}</span>
+                    <a href="/admin/logout" class="ml-4 text-red-600 hover:text-red-800">
+                        <i class="fas fa-sign-out-alt mr-1"></i>Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Admin Navigation -->
+    <div class="admin-nav">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex">
+                <a href="/admin/dashboard" class="active">
+                    <i class="fas fa-home mr-1"></i>Dashboard
+                </a>
+                <a href="/admin/products">
+                    <i class="fas fa-bicycle mr-1"></i>Products
+                </a>
+                <a href="/admin/bicycles">
+                    <i class="fas fa-bicycle mr-1"></i>Bicycles
+                </a>
+                <a href="/admin/accessories">
+                    <i class="fas fa-tools mr-1"></i>Accessories
+                </a>
+                <a href="/admin/orders">
+                    <i class="fas fa-shopping-bag mr-1"></i>Orders
+                </a>
+                <a href="/admin/users">
+                    <i class="fas fa-users mr-1"></i>Users
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">{{ stats.total_bicycles }}</div>
+                <div class="stat-label">
+                    <i class="fas fa-bicycle mr-1"></i>Total Bicycles
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-number">{{ stats.total_accessories }}</div>
+                <div class="stat-label">
+                    <i class="fas fa-tools mr-1"></i>Total Accessories
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-number">{{ stats.total_users }}</div>
+                <div class="stat-label">
+                    <i class="fas fa-users mr-1"></i>Registered Users
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-number">{{ stats.low_stock_items }}</div>
+                <div class="stat-label">
+                    <i class="fas fa-exclamation-triangle mr-1"></i>Low Stock Items
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">
+                <i class="fas fa-bolt mr-2"></i>Quick Actions
+            </h3>
+            
+            <a href="/admin/bicycles/add" class="action-button">
+                <i class="fas fa-plus mr-2"></i>Add New Bicycle
+            </a>
+            
+            <a href="/admin/accessories/add" class="action-button">
+                <i class="fas fa-plus mr-2"></i>Add New Accessory
+            </a>
+            
+            <a href="/admin/products" class="action-button secondary">
+                <i class="fas fa-edit mr-2"></i>Manage Products
+            </a>
+            
+            <a href="/admin/users" class="action-button secondary">
+                <i class="fas fa-users mr-2"></i>View Users
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

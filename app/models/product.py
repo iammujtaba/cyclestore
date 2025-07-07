@@ -38,11 +38,24 @@ class Bicycle(Base):
     # Keep legacy image field for backward compatibility
     image = Column(String)  # Primary image path
     
-    size = Column(String)
+    # Basic product fields
     brand = Column(String)
     description = Column(Text)
-    features = Column(JSON)  # Store as JSON array
-    in_stock = Column(Boolean, default=True)
+    size = Column(String)  # Legacy field for compatibility
+    
+    # Extended bicycle-specific fields
+    frame_size = Column(String)  # S, M, L, XL, or specific measurements
+    wheel_size = Column(String)  # 26", 27.5", 29", etc.
+    gear_count = Column(Integer)  # Number of gears
+    brake_type = Column(String)  # Disc, Rim, Hydraulic, etc.
+    suspension = Column(String)  # None, Front, Full, etc.
+    
+    # Admin/inventory fields
+    stock_quantity = Column(Integer, default=0)
+    is_featured = Column(Boolean, default=False)
+    
+    features = Column(JSON)  # Store as JSON array - for compatibility
+    in_stock = Column(Boolean, default=True)  # Legacy field
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
     
@@ -66,9 +79,20 @@ class Accessory(Base):
     # Keep legacy image field for backward compatibility
     image = Column(String)  # Primary image path
     
+    # Basic product fields
+    brand = Column(String)
     description = Column(Text)
     size = Column(String)
-    in_stock = Column(Boolean, default=True)
+    
+    # Accessory-specific fields
+    accessory_type = Column(String)  # Helmet, Light, Lock, etc.
+    compatibility = Column(String)  # Compatible bike types or universal
+    
+    # Admin/inventory fields
+    stock_quantity = Column(Integer, default=0)
+    is_featured = Column(Boolean, default=False)
+    
+    in_stock = Column(Boolean, default=True)  # Legacy field
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
     
