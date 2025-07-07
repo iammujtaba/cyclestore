@@ -1,203 +1,271 @@
-{% extends "base.html" %}
+{% extends "admin_base.html" %}
 
 {% block title %}Admin Dashboard - Supreme Cycle & Rickshaw Co.{% endblock %}
 
 {% block head %}
     <style>
-        .admin-dashboard {
-            background: #f8fafc;
+        .admin-content {
+            background: linear-gradient(to bottom right, #f0f4f8, #edf2f7);
             min-height: 100vh;
             padding-top: 2rem;
         }
         
-        .admin-header {
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto 3rem;
+        }
+        
+        .dashboard-header {
             background: white;
-            border-bottom: 1px solid #e5e7eb;
-            padding: 1rem 0;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            padding: 1.5rem 2rem;
             margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         
-        .admin-nav {
-            background: #dc2626;
-            color: white;
-            padding: 1rem 0;
-            margin-bottom: 2rem;
-        }
-        
-        .admin-nav a {
-            color: white;
-            text-decoration: none;
-            padding: 0.5rem 1rem;
-            margin: 0 0.5rem;
-            border-radius: 6px;
-            transition: background-color 0.2s;
-        }
-        
-        .admin-nav a:hover, .admin-nav a.active {
-            background: rgba(255, 255, 255, 0.2);
+        .dashboard-header h2 {
+            margin: 0;
+            color: #1f2937;
+            font-size: 1.5rem;
         }
         
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 1.5rem;
             margin-bottom: 2rem;
         }
         
         .stat-card {
             background: white;
-            padding: 1.5rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            border-left: 4px solid #dc2626;
+            padding: 1.75rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            border-top: 4px solid;
+            transition: transform 0.2s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-card.primary {
+            border-top-color: #dc2626;
+        }
+        
+        .stat-card.secondary {
+            border-top-color: #0284c7;
+        }
+        
+        .stat-card.warning {
+            border-top-color: #eab308;
+        }
+        
+        .stat-card.success {
+            border-top-color: #22c55e;
         }
         
         .stat-number {
-            font-size: 2rem;
-            font-weight: bold;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .stat-card.primary .stat-number {
             color: #dc2626;
+        }
+        
+        .stat-card.secondary .stat-number {
+            color: #0284c7;
+        }
+        
+        .stat-card.warning .stat-number {
+            color: #eab308;
+        }
+        
+        .stat-card.success .stat-number {
+            color: #22c55e;
+        }
+        
+        .stat-icon {
+            margin-right: 0.75rem;
+            background: rgba(0, 0, 0, 0.05);
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
         }
         
         .stat-label {
             color: #6b7280;
-            font-size: 0.875rem;
-            margin-top: 0.5rem;
+            font-size: 1rem;
+            font-weight: 500;
         }
         
         .quick-actions {
             background: white;
-            padding: 1.5rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            padding: 1.75rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .quick-actions h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 1.25rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
         }
         
         .action-button {
-            display: inline-block;
-            background: #dc2626;
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 6px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #f9fafb;
+            color: #1f2937;
+            padding: 1.25rem;
+            border-radius: 8px;
             text-decoration: none;
-            margin: 0.5rem 0.5rem 0.5rem 0;
-            transition: background-color 0.2s;
+            text-align: center;
+            transition: all 0.2s ease;
+            height: 100%;
+            border: 1px solid #f3f4f6;
         }
         
-        .action-button:hover {
-            background: #b91c1c;
-            color: white;
+        .action-button i {
+            font-size: 1.5rem;
+            margin-bottom: 0.75rem;
+            transition: transform 0.2s ease;
+        }
+        
+        .action-button span {
+            font-weight: 500;
+        }
+        
+        .action-button.primary {
+            color: #dc2626;
         }
         
         .action-button.secondary {
-            background: #059669;
+            color: #0284c7;
         }
         
-        .action-button.secondary:hover {
-            background: #047857;
+        .action-button:hover {
+            background: #f3f4f6;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            text-decoration: none;
+        }
+        
+        .action-button:hover i {
+            transform: scale(1.2);
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 {% endblock %}
 
 {% block content %}
-<div class="admin-dashboard">
-    <!-- Admin Header -->
-    <div class="admin-header">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center">
-                <div>
-                    <h1 class="text-2xl font-bold text-gray-800">
-                        <i class="fas fa-cogs mr-2 text-red-600"></i>Admin Dashboard
-                    </h1>
-                    <p class="text-gray-600">Welcome back, {{ admin.full_name }}</p>
-                </div>
-                <div>
-                    <span class="text-sm text-gray-500">Last login: {{ admin.last_login.strftime('%Y-%m-%d %H:%M') if admin.last_login else 'First time' }}</span>
-                    <a href="/admin/logout" class="ml-4 text-red-600 hover:text-red-800">
-                        <i class="fas fa-sign-out-alt mr-1"></i>Logout
-                    </a>
-                </div>
+<div class="admin-content">
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <div>
+                <h2>Welcome to your dashboard</h2>
+                <p class="text-gray-600">Here's what's happening with your products today.</p>
+            </div>
+            <div>
+                <span class="text-gray-500">Last login: {{ admin.last_login.strftime('%Y-%m-%d %H:%M') if admin.last_login else 'First time' }}</span>
             </div>
         </div>
-    </div>
-    
-    <!-- Admin Navigation -->
-    <div class="admin-nav">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex">
-                <a href="/admin/dashboard" class="active">
-                    <i class="fas fa-home mr-1"></i>Dashboard
-                </a>
-                <a href="/admin/products">
-                    <i class="fas fa-bicycle mr-1"></i>Products
-                </a>
-                <a href="/admin/bicycles">
-                    <i class="fas fa-bicycle mr-1"></i>Bicycles
-                </a>
-                <a href="/admin/accessories">
-                    <i class="fas fa-tools mr-1"></i>Accessories
-                </a>
-                <a href="/admin/orders">
-                    <i class="fas fa-shopping-bag mr-1"></i>Orders
-                </a>
-                <a href="/admin/users">
-                    <i class="fas fa-users mr-1"></i>Users
-                </a>
-            </div>
-        </div>
-    </div>
-    
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
         <!-- Stats Grid -->
         <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-number">{{ stats.total_bicycles }}</div>
-                <div class="stat-label">
-                    <i class="fas fa-bicycle mr-1"></i>Total Bicycles
+            <div class="stat-card primary">
+                <div class="stat-number">
+                    <div class="stat-icon"><i class="fas fa-bicycle"></i></div>
+                    {{ stats.total_bicycles }}
                 </div>
+                <div class="stat-label">Total Bicycles</div>
             </div>
             
-            <div class="stat-card">
-                <div class="stat-number">{{ stats.total_accessories }}</div>
-                <div class="stat-label">
-                    <i class="fas fa-tools mr-1"></i>Total Accessories
+            <div class="stat-card secondary">
+                <div class="stat-number">
+                    <div class="stat-icon"><i class="fas fa-tools"></i></div>
+                    {{ stats.total_accessories }}
                 </div>
+                <div class="stat-label">Total Accessories</div>
             </div>
             
-            <div class="stat-card">
-                <div class="stat-number">{{ stats.total_users }}</div>
-                <div class="stat-label">
-                    <i class="fas fa-users mr-1"></i>Registered Users
+            <div class="stat-card success">
+                <div class="stat-number">
+                    <div class="stat-icon"><i class="fas fa-users"></i></div>
+                    {{ stats.total_users }}
                 </div>
+                <div class="stat-label">Registered Users</div>
             </div>
             
-            <div class="stat-card">
-                <div class="stat-number">{{ stats.low_stock_items }}</div>
-                <div class="stat-label">
-                    <i class="fas fa-exclamation-triangle mr-1"></i>Low Stock Items
+            <div class="stat-card warning">
+                <div class="stat-number">
+                    <div class="stat-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                    {{ stats.low_stock_items }}
                 </div>
+                <div class="stat-label">Low Stock Items</div>
             </div>
         </div>
         
         <!-- Quick Actions -->
         <div class="quick-actions">
-            <h3 class="text-lg font-semibold text-gray-800 mb-4">
+            <h3>
                 <i class="fas fa-bolt mr-2"></i>Quick Actions
             </h3>
             
-            <a href="/admin/bicycles/add" class="action-button">
-                <i class="fas fa-plus mr-2"></i>Add New Bicycle
-            </a>
-            
-            <a href="/admin/accessories/add" class="action-button">
-                <i class="fas fa-plus mr-2"></i>Add New Accessory
-            </a>
-            
-            <a href="/admin/products" class="action-button secondary">
-                <i class="fas fa-edit mr-2"></i>Manage Products
-            </a>
-            
-            <a href="/admin/users" class="action-button secondary">
-                <i class="fas fa-users mr-2"></i>View Users
-            </a>
+            <div class="actions-grid">
+                <a href="/admin/products/new?product_type=bicycle" class="action-button primary">
+                    <i class="fas fa-bicycle"></i>
+                    <span>Add New Bicycle</span>
+                </a>
+                
+                <a href="/admin/products/new?product_type=accessory" class="action-button primary">
+                    <i class="fas fa-tools"></i>
+                    <span>Add New Accessory</span>
+                </a>
+                
+                <a href="/admin/products" class="action-button secondary">
+                    <i class="fas fa-list"></i>
+                    <span>Manage Products</span>
+                </a>
+                
+                <a href="/admin/import_products" class="action-button secondary">
+                    <i class="fas fa-file-import"></i>
+                    <span>Import Products</span>
+                </a>
+            </div>
         </div>
     </div>
 </div>

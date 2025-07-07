@@ -1,0 +1,433 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Products - Admin Panel{% endblock %}
+
+{% block head %}
+<style>
+    .admin-content {
+        background: linear-gradient(to bottom right, #f0f4f8, #edf2f7);
+        min-height: 100vh;
+        padding-top: 2rem;
+    }
+    
+    .admin-container {
+        max-width: 1200px;
+        margin: 0 auto 3rem;
+    }
+    
+    .admin-header {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        padding: 1.5rem 2rem;
+        margin-bottom: 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .admin-header h2 {
+        margin: 0;
+        color: #1f2937;
+    }
+    
+    .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+    
+    .product-card {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+    }
+    
+    .product-image {
+        height: 200px;
+        overflow: hidden;
+        position: relative;
+        background: #f9fafb;
+    }
+    
+    .product-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .product-image .placeholder {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        color: #9ca3af;
+    }
+    
+    .product-content {
+        padding: 1.25rem;
+    }
+    
+    .product-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin: 0 0 0.5rem;
+        color: #1f2937;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .product-category {
+        font-size: 0.85rem;
+        color: #6b7280;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 0.75rem;
+    }
+    
+    .product-price {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #dc2626;
+    }
+    
+    .product-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid #f3f4f6;
+    }
+    
+    .product-stock {
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+    
+    .product-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .btn {
+        font-weight: 500;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(45deg, #dc2626, #ef4444);
+        border: none;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+    
+    .btn-primary:hover {
+        background: linear-gradient(45deg, #b91c1c, #dc2626);
+        transform: translateY(-1px);
+    }
+    
+    .btn-secondary {
+        background: linear-gradient(45deg, #6b7280, #9ca3af);
+        border: none;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+    
+    .btn-secondary:hover {
+        background: linear-gradient(45deg, #4b5563, #6b7280);
+        transform: translateY(-1px);
+    }
+    
+    .btn-danger {
+        background: linear-gradient(45deg, #dc2626, #ef4444);
+        border: none;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+    
+    .btn-danger:hover {
+        background: linear-gradient(45deg, #b91c1c, #dc2626);
+        transform: translateY(-1px);
+    }
+    
+    .btn-sm {
+        padding: 0.375rem 0.75rem;
+        font-size: 0.875rem;
+    }
+    
+    .stock-badge {
+        padding: 0.25rem 0.5rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+    
+    .stock-badge.in-stock {
+        background-color: #d1fae5;
+        color: #065f46;
+    }
+    
+    .stock-badge.low-stock {
+        background-color: #fef3c7;
+        color: #92400e;
+    }
+    
+    .stock-badge.out-of-stock {
+        background-color: #fee2e2;
+        color: #b91c1c;
+    }
+    
+    .tabs {
+        display: flex;
+        border-bottom: 1px solid #e5e7eb;
+        margin-bottom: 2rem;
+    }
+    
+    .tab {
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        color: #6b7280;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border-bottom: 2px solid transparent;
+    }
+    
+    .tab.active {
+        color: #dc2626;
+        border-bottom-color: #dc2626;
+    }
+    
+    .add-button {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: linear-gradient(45deg, #dc2626, #ef4444);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.25rem;
+        border-radius: 6px;
+        font-weight: 600;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        box-shadow: 0 4px 6px rgba(220, 38, 38, 0.15);
+    }
+    
+    .add-button:hover {
+        background: linear-gradient(45deg, #b91c1c, #dc2626);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 10px rgba(220, 38, 38, 0.2);
+        color: white;
+        text-decoration: none;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+    
+    .empty-state img {
+        max-width: 200px;
+        margin-bottom: 2rem;
+    }
+    
+    .empty-state h3 {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        color: #1f2937;
+    }
+    
+    .empty-state p {
+        color: #6b7280;
+        margin-bottom: 1.5rem;
+    }
+    
+    @media (max-width: 768px) {
+        .admin-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+        
+        .product-grid {
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        }
+        
+        .tabs {
+            overflow-x: auto;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-content">
+    <div class="admin-container">
+        <div class="admin-header">
+            <h2>Products Management</h2>
+            <div>
+                <a href="/admin/import_products" class="btn btn-secondary me-2">
+                    <i class="fas fa-file-import me-1"></i> Import Products
+                </a>
+                <div class="btn-group">
+                    <a href="/admin/products/new?product_type=bicycle" class="add-button">
+                        <i class="fas fa-plus"></i> Add Bicycle
+                    </a>
+                    <a href="/admin/products/new?product_type=accessory" class="add-button ms-2">
+                        <i class="fas fa-plus"></i> Add Accessory
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tabs">
+            <div class="tab {% if current_filter == 'all' %}active{% endif %}" onclick="location.href='/admin/products'">
+                All Products
+            </div>
+            <div class="tab {% if current_filter == 'bicycle' %}active{% endif %}" onclick="location.href='/admin/products?product_type=bicycle'">
+                Bicycles
+            </div>
+            <div class="tab {% if current_filter == 'accessory' %}active{% endif %}" onclick="location.href='/admin/products?product_type=accessory'">
+                Accessories
+            </div>
+        </div>
+        
+        {% if bicycles or accessories %}
+        <div class="product-grid">
+            {% for product in bicycles %}
+            <div class="product-card">
+                <div class="product-image">
+                    {% if product.image %}
+                    <img src="{{ product.image }}" alt="{{ product.name }}">
+                    {% else %}
+                    <div class="placeholder">
+                        <i class="fas fa-bicycle fa-3x"></i>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="product-content">
+                    <div class="product-category">{{ product.category }}</div>
+                    <h3 class="product-title">{{ product.name }}</h3>
+                    <div class="product-price">₹{{ product.price }}</div>
+                    
+                    <div class="product-meta">
+                        <div class="product-stock">
+                            {% if product.stock_quantity and product.stock_quantity > 10 %}
+                            <span class="stock-badge in-stock">In Stock ({{ product.stock_quantity }})</span>
+                            {% elif product.stock_quantity and product.stock_quantity > 0 %}
+                            <span class="stock-badge low-stock">Low Stock ({{ product.stock_quantity }})</span>
+                            {% else %}
+                            <span class="stock-badge out-of-stock">Out of Stock</span>
+                            {% endif %}
+                        </div>
+                        <div class="product-actions">
+                            <a href="/admin/products/bicycle/{{ product.id }}/edit" class="btn btn-secondary btn-sm">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                            <button onclick="deleteProduct('bicycle', {{ product.id }})" class="btn btn-danger btn-sm">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            
+            {% for product in accessories %}
+            <div class="product-card">
+                <div class="product-image">
+                    {% if product.image %}
+                    <img src="{{ product.image }}" alt="{{ product.name }}">
+                    {% else %}
+                    <div class="placeholder">
+                        <i class="fas fa-cogs fa-3x"></i>
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="product-content">
+                    <div class="product-category">{{ product.category }}</div>
+                    <h3 class="product-title">{{ product.name }}</h3>
+                    <div class="product-price">₹{{ product.price }}</div>
+                    
+                    <div class="product-meta">
+                        <div class="product-stock">
+                            {% if product.stock_quantity and product.stock_quantity > 10 %}
+                            <span class="stock-badge in-stock">In Stock ({{ product.stock_quantity }})</span>
+                            {% elif product.stock_quantity and product.stock_quantity > 0 %}
+                            <span class="stock-badge low-stock">Low Stock ({{ product.stock_quantity }})</span>
+                            {% else %}
+                            <span class="stock-badge out-of-stock">Out of Stock</span>
+                            {% endif %}
+                        </div>
+                        <div class="product-actions">
+                            <a href="/admin/products/accessory/{{ product.id }}/edit" class="btn btn-secondary btn-sm">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                            <button onclick="deleteProduct('accessory', {{ product.id }})" class="btn btn-danger btn-sm">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <img src="/static/images/empty-products.svg" alt="No products" onerror="this.src='https://via.placeholder.com/200?text=No+Products'">
+            <h3>No products found</h3>
+            <p>Start by adding your first product to your inventory</p>
+            <a href="/admin/products/new?product_type=bicycle" class="add-button">
+                <i class="fas fa-plus"></i> Add First Product
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function deleteProduct(productType, productId) {
+    if (confirm('Are you sure you want to delete this product?')) {
+        fetch(`/admin/products/${productType}/${productId}/delete`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error deleting product: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error deleting product');
+        });
+    }
+}
+</script>
+{% endblock %}

@@ -14,7 +14,7 @@ class AdminAuthService:
     """Service for handling admin authentication"""
     
     def __init__(self):
-        self.session_duration = timedelta(hours=8)  # Admin session expires in 8 hours
+        self.session_duration = timedelta(hours=24)  # Admin session expires in 24 hours
     
     def authenticate_admin(self, db: Session, username: str, password: str) -> Optional[Admin]:
         """Authenticate admin with username and password"""
@@ -102,26 +102,34 @@ class AdminAuthService:
         return self.logout_admin(db, session_token)
     
     def create_default_admin(self, db: Session) -> Admin:
-        """Create default superuser admin if not exists"""
-        existing_admin = db.query(Admin).filter(Admin.username == "superuser").first()
-        
+        """Create default admin if not exists"""
+        # Check for both admin and superuser
+        existing_admin = db.query(Admin).filter(
+            (Admin.username == "admin") | (Admin.username == "superuser")
+        ).first()
+
         if existing_admin:
             return existing_admin
-        
-        # Create default admin with specified credentials
+
+        # Create default admin with standard credentials
         admin = Admin(
-            username="superuser",
-            hashed_password=Admin.hash_password("ummehabiba"),
-            full_name="Super Administrator",
+            username="admin",
+            hashed_password=Admin.hash_password("admin123"),
+            full_name="Administrator",
             email="admin@supremecycle.com",
             is_super_admin=True
         )
-        
-        db.add(admin)
-        db.commit()
-        db.refresh(admin)
-        
-        return admin
+
+        try:
+            db.add(admin)
+            db.commit()
+            db.refresh(admin)
+            print(f"✓ Created default admin user: {admin.username}")
+            return admin
+        except Exception as e:
+            db.rollback()
+            print(f"✗ Failed to create admin: {e}")
+            raise
 
 # Create global instance
 admin_auth_service = AdminAuthService()

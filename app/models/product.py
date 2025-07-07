@@ -92,6 +92,7 @@ class Accessory(Base):
     stock_quantity = Column(Integer, default=0)
     is_featured = Column(Boolean, default=False)
     
+    features = Column(JSON)  # Store as JSON array - for compatibility
     in_stock = Column(Boolean, default=True)  # Legacy field
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())

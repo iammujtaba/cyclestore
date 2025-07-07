@@ -67,8 +67,8 @@
                     {% else %}
                         <i class="fas fa-cog text-6xl text-gray-400"></i>
                     {% endif %}
-                    {% if accessory.in_stock %}
-                    <span class="absolute top-2 right-2 bg-green-500 text-white px-2 py-1 rounded text-xs">In Stock</span>
+                    {% if accessory.stock_quantity and accessory.stock_quantity > 0 %}
+                    <span class="absolute top-2 right-2 bg-green-500 text-white px-2 py-1 rounded text-xs">In Stock ({{ accessory.stock_quantity }})</span>
                     {% else %}
                     <span class="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded text-xs">Out of Stock</span>
                     {% endif %}
@@ -76,7 +76,7 @@
                 <div class="p-4">
                     <div class="flex justify-between items-start mb-2">
                         <h3 class="text-lg font-semibold text-gray-800">{{ accessory.name }}</h3>
-                        <span class="bg-secondary text-white px-2 py-1 rounded text-xs">{{ accessory.category.title() }}</span>
+                        <span class="bg-secondary text-white px-2 py-1 rounded text-xs">{{ accessory.category.title() if accessory.category else 'N/A' }}</span>
                     </div>
                     <p class="text-gray-600 text-sm mb-3">{{ accessory.description[:80] }}...</p>
                     
@@ -88,7 +88,7 @@
                     
                     <div class="flex justify-between items-center">
                         <span class="text-xl font-bold text-secondary">₹{{ accessory.price }}</span>
-                        <button class="bg-secondary text-white px-3 py-2 rounded text-sm hover:bg-green-600 transition-colors add-to-cart {% if not accessory.in_stock %}opacity-50 cursor-not-allowed{% endif %}" data-id="{{ accessory.id }}" {% if not accessory.in_stock %}disabled{% endif %}>
+                        <button class="bg-secondary text-white px-3 py-2 rounded text-sm hover:bg-green-600 transition-colors add-to-cart {% if not (accessory.stock_quantity and accessory.stock_quantity > 0) %}opacity-50 cursor-not-allowed{% endif %}" data-id="{{ accessory.id }}" {% if not (accessory.stock_quantity and accessory.stock_quantity > 0) %}disabled{% endif %}>
                             <i class="fas fa-cart-plus"></i>
                         </button>
                     </div>

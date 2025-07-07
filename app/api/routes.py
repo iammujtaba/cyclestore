@@ -216,18 +216,19 @@ async def delete_product_images(product_type: str, product_id: int, db: Session 
     
     return JSONResponse(content={"success": True, "message": "Images deleted successfully"})
 
-@router.get("/admin/products", response_class=HTMLResponse)
-async def admin_products(request: Request, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    """Simple admin page for managing products and images"""
-    bicycles = crud_product.get_bicycles(db)
-    accessories = crud_product.get_accessories(db)
-    
-    return templates.TemplateResponse("admin/products.html", {
-        "request": request,
-        "bicycles": bicycles,
-        "accessories": accessories,
-        "user": current_user
-    })
+# Commented out to avoid conflict with admin routes
+# @router.get("/admin/products", response_class=HTMLResponse)
+# async def admin_products(request: Request, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+#     """Simple admin page for managing products and images"""
+#     bicycles = crud_product.get_bicycles(db)
+#     accessories = crud_product.get_accessories(db)
+#     
+#     return templates.TemplateResponse("admin/products.html", {
+#         "request": request,
+#         "bicycles": bicycles,
+#         "accessories": accessories,
+#         "user": current_user
+#     })
 
 # Authentication Routes
 @router.get("/register", response_class=HTMLResponse)

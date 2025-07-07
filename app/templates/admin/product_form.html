@@ -1,26 +1,40 @@
-{% extends "base.html" %}
+{% extends "admin_base.html" %}
 
 {% block title %}{{ 'Edit' if product else 'Add' }} {{ product_type|title }} - Admin Panel{% endblock %}
 
 {% block head %}
     <style>
         .admin-content {
-            background: #f8fafc;
+            background: linear-gradient(to bottom right, #f0f4f8, #edf2f7);
             min-height: 100vh;
             padding-top: 2rem;
+            padding-bottom: 2rem;
         }
         
         .form-container {
-            max-width: 800px;
-            margin: 0 auto;
+            max-width: 900px;
+            margin: 0 auto 3rem;
             background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            padding: 0;
+            overflow: hidden;
+            border-top: 4px solid #dc2626;
+        }
+        
+        .form-header {
+            background: linear-gradient(to right, #f9fafb, #f3f4f6);
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid #f0f0f0;
+            margin-bottom: 2rem;
+        }
+        
+        .form-body {
+            padding: 0 2.5rem 2.5rem;
         }
         
         .form-group {
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.8rem;
         }
         
         .form-group label {
@@ -28,17 +42,19 @@
             font-weight: 600;
             color: #374151;
             margin-bottom: 0.5rem;
+            font-size: 0.95rem;
         }
         
         .form-group input,
         .form-group select,
         .form-group textarea {
             width: 100%;
-            padding: 0.75rem;
+            padding: 0.75rem 1rem;
             border: 2px solid #e5e7eb;
-            border-radius: 6px;
-            font-size: 0.875rem;
-            transition: border-color 0.2s;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            background-color: #fcfcfc;
         }
         
         .form-group input:focus,
@@ -47,153 +63,295 @@
             outline: none;
             border-color: #dc2626;
             box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+            background-color: #fff;
         }
         
         .form-group textarea {
-            min-height: 100px;
+            min-height: 120px;
             resize: vertical;
+            line-height: 1.6;
         }
         
         .form-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 1rem;
+            gap: 1.5rem;
+        }
+        
+        .form-section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #111827;
+            margin: 2rem 0 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid #f3f4f6;
         }
         
         .btn-primary {
-            background: #dc2626;
+            background: linear-gradient(45deg, #dc2626, #ef4444);
+            border: none;
             color: white;
             padding: 0.75rem 1.5rem;
-            border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             font-weight: 600;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px rgba(220, 38, 38, 0.15);
             cursor: pointer;
-            transition: background-color 0.2s;
-            margin-right: 1rem;
         }
         
         .btn-primary:hover {
-            background: #b91c1c;
+            background: linear-gradient(45deg, #b91c1c, #dc2626);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 10px rgba(220, 38, 38, 0.2);
         }
         
         .btn-secondary {
-            background: #6b7280;
+            background: linear-gradient(45deg, #6b7280, #9ca3af);
+            border: none;
             color: white;
             padding: 0.75rem 1.5rem;
-            border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             font-weight: 600;
-            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px rgba(107, 114, 128, 0.15);
             text-decoration: none;
             display: inline-block;
-            transition: background-color 0.2s;
         }
         
         .btn-secondary:hover {
-            background: #4b5563;
+            background: linear-gradient(45deg, #4b5563, #6b7280);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 10px rgba(107, 114, 128, 0.2);
             color: white;
+            text-decoration: none;
         }
         
-        .error-message {
-            background: #fee2e2;
-            border: 1px solid #fca5a5;
-            color: #dc2626;
-            padding: 0.75rem;
-            border-radius: 6px;
-            margin-bottom: 1.5rem;
-            font-size: 0.875rem;
+        .btn-danger {
+            background: linear-gradient(45deg, #991b1b, #b91c1c);
+            border: none;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px rgba(153, 27, 27, 0.15);
+            cursor: pointer;
         }
         
-        .success-message {
-            background: #d1fae5;
-            border: 1px solid #6ee7b7;
-            color: #047857;
-            padding: 0.75rem;
-            border-radius: 6px;
-            margin-bottom: 1.5rem;
-            font-size: 0.875rem;
+        .btn-danger:hover {
+            background: linear-gradient(45deg, #7f1d1d, #991b1b);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 10px rgba(153, 27, 27, 0.2);
         }
         
-        .features-input {
-            border: 2px solid #e5e7eb;
-            border-radius: 6px;
-            padding: 0.75rem;
-            min-height: 100px;
+        .section-title {
+            color: #1f2937;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin: 2.5rem 0 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid #f3f4f6;
+        }
+        
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            margin: 0 -15px;
+        }
+        
+        .form-col {
+            padding: 0 15px;
+            flex: 1;
+        }
+        
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            font-weight: 500;
+            border-left: 4px solid;
+        }
+        
+        .alert-danger {
+            background-color: #fee2e2;
+            color: #b91c1c;
+            border-left-color: #dc2626;
+        }
+        
+        .alert-success {
+            background-color: #dcfce7;
+            color: #15803d;
+            border-left-color: #22c55e;
+        }
+        
+        .custom-checkbox {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+        
+        .custom-checkbox input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin-right: 10px;
+            accent-color: #dc2626;
+        }
+        
+        .custom-checkbox label {
+            margin-bottom: 0;
+            font-weight: normal;
+            cursor: pointer;
+        }
+        
+        .features-section {
+            background-color: #f9fafb;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-top: 1.5rem;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 2.5rem;
+        }
+        
+        .form-actions-left {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .features-container {
+            margin-top: 1rem;
         }
         
         .feature-item {
             display: flex;
             align-items: center;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.75rem;
+            gap: 0.75rem;
         }
         
         .feature-item input {
             flex: 1;
-            margin-right: 0.5rem;
-            margin-bottom: 0;
         }
         
-        .remove-feature {
-            background: #dc2626;
-            color: white;
+        .feature-remove {
+            background: #fee2e2;
+            color: #dc2626;
             border: none;
-            border-radius: 4px;
-            padding: 0.25rem 0.5rem;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
-            font-size: 0.75rem;
+            transition: all 0.2s ease;
         }
         
-        .add-feature {
-            background: #059669;
-            color: white;
+        .feature-remove:hover {
+            background: #fecaca;
+            transform: scale(1.05);
+        }
+        
+        .add-feature-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #dcfce7;
+            color: #16a34a;
             border: none;
-            border-radius: 4px;
             padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: 500;
             cursor: pointer;
-            font-size: 0.875rem;
-            margin-top: 0.5rem;
+            transition: all 0.2s ease;
+            margin-top: 0.75rem;
+        }
+        
+        .add-feature-btn:hover {
+            background: #bbf7d0;
+        }
+        
+        @media (max-width: 768px) {
+            .form-col {
+                flex: 0 0 100%;
+                margin-bottom: 1rem;
+            }
+            
+            .form-body {
+                padding: 0 1.5rem 1.5rem;
+            }
+            
+            .form-header {
+                padding: 1.25rem 1.5rem;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 1rem;
+            }
+            
+            .form-actions-left {
+                flex-direction: column;
+            }
         }
     </style>
 {% endblock %}
 
 {% block content %}
 <div class="admin-content">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="mb-6">
-            <h1 class="text-2xl font-bold text-gray-800">
-                <i class="fas fa-{{ 'bicycle' if product_type == 'bicycle' else 'tools' }} mr-2 text-red-600"></i>
-                {{ 'Edit' if product else 'Add' }} {{ product_type|title }}
-            </h1>
-            <p class="text-gray-600">{{ 'Update' if product else 'Create a new' }} {{ product_type }} in your inventory</p>
+    <div class="form-container">
+        <div class="form-header">
+            <h2 class="mb-0">{{ 'Edit' if product else 'Add New' }} {{ product_type|title }}</h2>
         </div>
         
-        <div class="form-container">
+        <div class="form-body">
             {% if error %}
-            <div class="error-message">
-                <i class="fas fa-exclamation-triangle mr-2"></i>{{ error }}
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-circle mr-2"></i> {{ error }}
             </div>
             {% endif %}
             
             {% if success %}
-            <div class="success-message">
-                <i class="fas fa-check-circle mr-2"></i>{{ success }}
+            <div class="alert alert-success">
+                <i class="fas fa-check-circle mr-2"></i> {{ success }}
             </div>
             {% endif %}
             
-            <form method="POST" action="{{ '/admin/' + product_type + 's/edit/' + product.id|string if product else '/admin/' + product_type + 's/add' }}">
+            <form method="POST" enctype="multipart/form-data" action="{% if product %}/admin/products/{{ product_type }}/{{ product.id }}/update{% else %}/admin/products/create{% endif %}">
+                {% if not product %}
+                <input type="hidden" name="product_type" value="{{ product_type }}">
+                {% endif %}
+                <div class="section-title">
+                    <i class="fas fa-info-circle mr-2"></i>Basic Information
+                </div>
+                
                 <div class="form-grid">
                     <div class="form-group">
                         <label for="name">
                             <i class="fas fa-tag mr-1"></i>Product Name *
                         </label>
-                        <input type="text" 
-                               id="name" 
-                               name="name" 
-                               value="{{ product.name if product else (form_data.name if form_data else '') }}"
-                               required 
-                               placeholder="Enter {{ product_type }} name">
+                        <input type="text" id="name" name="name" value="{{ product.name if product else '' }}" required>
                     </div>
                     
+                    <div class="form-group">
+                        <label for="price">
+                            <i class="fas fa-rupee-sign mr-1"></i>Price (₹) *
+                        </label>
+                        <input type="number" id="price" name="price" value="{{ product.price if product else '' }}" step="0.01" required>
+                    </div>
+                </div>
+                
+                <div class="form-grid">
                     <div class="form-group">
                         <label for="category">
                             <i class="fas fa-folder mr-1"></i>Category *
@@ -201,63 +359,53 @@
                         <select id="category" name="category" required>
                             <option value="">Select Category</option>
                             {% if product_type == 'bicycle' %}
-                                <option value="mountain" {{ 'selected' if (product and product.category == 'mountain') or (form_data and form_data.category == 'mountain') }}>Mountain Bike</option>
-                                <option value="road" {{ 'selected' if (product and product.category == 'road') or (form_data and form_data.category == 'road') }}>Road Bike</option>
-                                <option value="hybrid" {{ 'selected' if (product and product.category == 'hybrid') or (form_data and form_data.category == 'hybrid') }}>Hybrid Bike</option>
-                                <option value="electric" {{ 'selected' if (product and product.category == 'electric') or (form_data and form_data.category == 'electric') }}>Electric Bike</option>
-                                <option value="kids" {{ 'selected' if (product and product.category == 'kids') or (form_data and form_data.category == 'kids') }}>Kids Bike</option>
-                                <option value="folding" {{ 'selected' if (product and product.category == 'folding') or (form_data and form_data.category == 'folding') }}>Folding Bike</option>
+                                <option value="mountain" {{ 'selected' if (product and product.category == 'mountain') }}>Mountain Bike</option>
+                                <option value="road" {{ 'selected' if (product and product.category == 'road') }}>Road Bike</option>
+                                <option value="hybrid" {{ 'selected' if (product and product.category == 'hybrid') }}>Hybrid Bike</option>
+                                <option value="electric" {{ 'selected' if (product and product.category == 'electric') }}>Electric Bike</option>
+                                <option value="kids" {{ 'selected' if (product and product.category == 'kids') }}>Kids Bike</option>
+                                <option value="folding" {{ 'selected' if (product and product.category == 'folding') }}>Folding Bike</option>
                             {% else %}
-                                <option value="helmet" {{ 'selected' if (product and product.category == 'helmet') or (form_data and form_data.category == 'helmet') }}>Helmet</option>
-                                <option value="lock" {{ 'selected' if (product and product.category == 'lock') or (form_data and form_data.category == 'lock') }}>Lock</option>
-                                <option value="light" {{ 'selected' if (product and product.category == 'light') or (form_data and form_data.category == 'light') }}>Light</option>
-                                <option value="bag" {{ 'selected' if (product and product.category == 'bag') or (form_data and form_data.category == 'bag') }}>Bag</option>
-                                <option value="pump" {{ 'selected' if (product and product.category == 'pump') or (form_data and form_data.category == 'pump') }}>Pump</option>
-                                <option value="tool" {{ 'selected' if (product and product.category == 'tool') or (form_data and form_data.category == 'tool') }}>Tool</option>
-                                <option value="tire" {{ 'selected' if (product and product.category == 'tire') or (form_data and form_data.category == 'tire') }}>Tire</option>
-                                <option value="maintenance" {{ 'selected' if (product and product.category == 'maintenance') or (form_data and form_data.category == 'maintenance') }}>Maintenance</option>
+                                <option value="helmet" {{ 'selected' if (product and product.category == 'helmet') }}>Helmet</option>
+                                <option value="lock" {{ 'selected' if (product and product.category == 'lock') }}>Lock</option>
+                                <option value="light" {{ 'selected' if (product and product.category == 'light') }}>Light</option>
+                                <option value="bag" {{ 'selected' if (product and product.category == 'bag') }}>Bag</option>
+                                <option value="pump" {{ 'selected' if (product and product.category == 'pump') }}>Pump</option>
+                                <option value="tool" {{ 'selected' if (product and product.category == 'tool') }}>Tool</option>
+                                <option value="tire" {{ 'selected' if (product and product.category == 'tire') }}>Tire</option>
+                                <option value="maintenance" {{ 'selected' if (product and product.category == 'maintenance') }}>Maintenance</option>
                             {% endif %}
                         </select>
                     </div>
                     
                     <div class="form-group">
-                        <label for="price">
-                            <i class="fas fa-rupee-sign mr-1"></i>Price (₹) *
+                        <label for="stock_quantity">
+                            <i class="fas fa-boxes mr-1"></i>Stock Quantity
                         </label>
-                        <input type="number" 
-                               id="price" 
-                               name="price" 
-                               value="{{ product.price if product else (form_data.price if form_data else '') }}"
-                               required 
-                               min="0"
-                               step="0.01"
-                               placeholder="Enter price">
+                        <input type="number" id="stock_quantity" name="stock_quantity" value="{{ product.stock_quantity if product else '10' }}" min="0">
                     </div>
-                    
-                    <div class="form-group">
-                        <label for="size">
-                            <i class="fas fa-ruler mr-1"></i>Size
-                        </label>
-                        <input type="text" 
-                               id="size" 
-                               name="size" 
-                               value="{{ product.size if product else (form_data.size if form_data else '') }}"
-                               placeholder="e.g., Medium, Large, 26 inch">
-                    </div>
-                    
-                    {% if product_type == 'bicycle' %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="description">
+                        <i class="fas fa-align-left mr-1"></i>Description
+                    </label>
+                    <textarea id="description" name="description" rows="4">{{ product.description if product else '' }}</textarea>
+                </div>
+                
+                <div class="section-title">
+                    <i class="fas fa-cogs mr-2"></i>Product Details
+                </div>
+                
+                {% if product_type == 'bicycle' %}
+                <div class="form-grid">
                     <div class="form-group">
                         <label for="brand">
                             <i class="fas fa-copyright mr-1"></i>Brand
                         </label>
-                        <input type="text" 
-                               id="brand" 
-                               name="brand" 
-                               value="{{ product.brand if product else (form_data.brand if form_data else '') }}"
-                               placeholder="Enter brand name">
+                        <input type="text" id="brand" name="brand" value="{{ product.brand if product else '' }}">
                     </div>
                     
-                    <!-- Extended Bicycle Fields -->
                     <div class="form-group">
                         <label for="frame_size">
                             <i class="fas fa-expand-alt mr-1"></i>Frame Size
@@ -272,7 +420,9 @@
                             <option value="XXL" {{ 'selected' if (product and product.frame_size == 'XXL') }}>XXL (22+ inch)</option>
                         </select>
                     </div>
-                    
+                </div>
+                
+                <div class="form-grid">
                     <div class="form-group">
                         <label for="wheel_size">
                             <i class="fas fa-circle mr-1"></i>Wheel Size
@@ -293,15 +443,11 @@
                         <label for="gear_count">
                             <i class="fas fa-cog mr-1"></i>Number of Gears
                         </label>
-                        <input type="number" 
-                               id="gear_count" 
-                               name="gear_count" 
-                               value="{{ product.gear_count if product else (form_data.gear_count if form_data else '') }}"
-                               min="1"
-                               max="30"
-                               placeholder="e.g., 21">
+                        <input type="number" id="gear_count" name="gear_count" value="{{ product.gear_count if product else '' }}" min="1" max="30">
                     </div>
-                    
+                </div>
+                
+                <div class="form-grid">
                     <div class="form-group">
                         <label for="brake_type">
                             <i class="fas fa-hand-paper mr-1"></i>Brake Type
@@ -327,18 +473,43 @@
                             <option value="Rear" {{ 'selected' if (product and product.suspension == 'Rear') }}>Rear Suspension</option>
                         </select>
                     </div>
-                    
-                    {% else %}
-                    <!-- Accessory Fields -->
+                </div>
+                
+                <div class="features-section">
+                    <h5>
+                        <i class="fas fa-list mr-2"></i>Features
+                    </h5>
+                    <div class="features-container" id="features-container">
+                        {% if product and product.features %}
+                            {% for feature in product.features %}
+                            <div class="feature-item">
+                                <input type="text" name="features[]" value="{{ feature }}" placeholder="Enter feature">
+                                <button type="button" class="feature-remove" onclick="removeFeature(this)">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="feature-item">
+                                <input type="text" name="features[]" placeholder="Enter feature">
+                                <button type="button" class="feature-remove" onclick="removeFeature(this)">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <button type="button" class="add-feature-btn" onclick="addFeature()">
+                        <i class="fas fa-plus"></i> Add Feature
+                    </button>
+                </div>
+                {% else %}
+                <!-- Accessory Fields -->
+                <div class="form-grid">
                     <div class="form-group">
                         <label for="brand">
                             <i class="fas fa-copyright mr-1"></i>Brand
                         </label>
-                        <input type="text" 
-                               id="brand" 
-                               name="brand" 
-                               value="{{ product.brand if product else (form_data.brand if form_data else '') }}"
-                               placeholder="Enter brand name">
+                        <input type="text" id="brand" name="brand" value="{{ product.brand if product else '' }}">
                     </div>
                     
                     <div class="form-group">
@@ -354,84 +525,57 @@
                             <option value="Performance" {{ 'selected' if (product and product.accessory_type == 'Performance') }}>Performance</option>
                         </select>
                     </div>
-                    
-                    <div class="form-group">
-                        <label for="compatibility">
-                            <i class="fas fa-link mr-1"></i>Compatibility
-                        </label>
-                        <input type="text" 
-                               id="compatibility" 
-                               name="compatibility" 
-                               value="{{ product.compatibility if product else (form_data.compatibility if form_data else '') }}"
-                               placeholder="e.g., Universal, Mountain bikes, Road bikes">
-                    </div>
-                    {% endif %}
-                    
-                    <!-- Common Admin Fields -->
-                    <div class="form-group">
-                        <label for="stock_quantity">
-                            <i class="fas fa-boxes mr-1"></i>Stock Quantity
-                        </label>
-                        <input type="number" 
-                               id="stock_quantity" 
-                               name="stock_quantity" 
-                               value="{{ product.stock_quantity if product else (form_data.stock_quantity if form_data else '10') }}"
-                               min="0"
-                               placeholder="Enter stock quantity">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>
-                            <input type="checkbox" name="is_featured" value="1" {% if (product and product.is_featured) %}checked{% endif %}>
-                            <i class="fas fa-star mr-1"></i>Featured Product
-                        </label>
-                    </div>
                 </div>
                 
                 <div class="form-group">
-                    <label for="description">
-                        <i class="fas fa-align-left mr-1"></i>Description
+                    <label for="compatibility">
+                        <i class="fas fa-link mr-1"></i>Compatibility
                     </label>
-                    <textarea id="description" 
-                              name="description" 
-                              placeholder="Enter detailed description">{{ product.description if product else (form_data.description if form_data else '') }}</textarea>
-                </div>
-                
-                {% if product_type == 'bicycle' %}
-                <div class="form-group">
-                    <label>
-                        <i class="fas fa-list mr-1"></i>Features
-                    </label>
-                    <div class="features-input" id="features-container">
-                        {% if product and product.features %}
-                            {% for feature in product.features %}
-                            <div class="feature-item">
-                                <input type="text" name="features[]" value="{{ feature }}" placeholder="Enter feature">
-                                <button type="button" class="remove-feature" onclick="removeFeature(this)">Remove</button>
-                            </div>
-                            {% endfor %}
-                        {% else %}
-                            <div class="feature-item">
-                                <input type="text" name="features[]" placeholder="Enter feature">
-                                <button type="button" class="remove-feature" onclick="removeFeature(this)">Remove</button>
-                            </div>
-                        {% endif %}
-                    </div>
-                    <button type="button" class="add-feature" onclick="addFeature()">
-                        <i class="fas fa-plus mr-1"></i>Add Feature
-                    </button>
+                    <input type="text" id="compatibility" name="compatibility" value="{{ product.compatibility if product else '' }}">
                 </div>
                 {% endif %}
                 
-                <div class="form-group">
-                    <label>
-                        <input type="checkbox" name="in_stock" value="1" {% if (product and product.in_stock) or not product %}checked{% endif %}>
-                        <i class="fas fa-box mr-1"></i>In Stock
-                    </label>
+                <div class="section-title">
+                    <i class="fas fa-sliders-h mr-2"></i>Product Status
                 </div>
                 
-                <div class="flex justify-between items-center">
-                    <div>
+                <div class="form-group">
+                    <label for="image">
+                        <i class="fas fa-image mr-1"></i>Product Image
+                    </label>
+                    <input type="file" id="image" name="images" accept="image/*" multiple>
+                    {% if product and product.image_filename %}
+                    <div class="mt-2">
+                        <small class="text-muted">Current image: {{ product.image_filename }}</small>
+                        <div class="mt-2">
+                            <img src="/static/product_images/{{ product.image_filename }}" alt="{{ product.name }}" style="max-width: 200px; height: auto; border-radius: 4px; border: 1px solid #e5e7eb;">
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <div class="custom-checkbox">
+                            <input type="checkbox" id="is_featured" name="is_featured" value="1" {% if (product and product.is_featured) %}checked{% endif %}>
+                            <label for="is_featured">
+                                <i class="fas fa-star mr-1 text-warning"></i>Featured Product
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="custom-checkbox">
+                            <input type="checkbox" id="in_stock" name="in_stock" value="1" {% if (product and product.in_stock) or not product %}checked{% endif %}>
+                            <label for="in_stock">
+                                <i class="fas fa-box mr-1 text-success"></i>In Stock
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <div class="form-actions-left">
                         <button type="submit" class="btn-primary">
                             <i class="fas fa-save mr-2"></i>
                             {{ 'Update' if product else 'Create' }} {{ product_type|title }}
@@ -442,7 +586,7 @@
                     </div>
                     
                     {% if product %}
-                    <a href="/admin/{{ product_type }}s/images/{{ product.id }}" class="btn-secondary">
+                    <a href="/admin/products/{{ product_type }}/{{ product.id }}/images" class="btn-secondary">
                         <i class="fas fa-images mr-2"></i>Manage Images
                     </a>
                     {% endif %}
@@ -452,6 +596,31 @@
     </div>
 </div>
 
+{% if product %}
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete "{{ product.name }}"? This action cannot be undone.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <form method="POST" action="/admin/products/{{ product_type }}/{{ product.id }}/delete">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
 <script>
 function addFeature() {
     const container = document.getElementById('features-container');
@@ -459,7 +628,9 @@ function addFeature() {
     featureItem.className = 'feature-item';
     featureItem.innerHTML = `
         <input type="text" name="features[]" placeholder="Enter feature">
-        <button type="button" class="remove-feature" onclick="removeFeature(this)">Remove</button>
+        <button type="button" class="feature-remove" onclick="removeFeature(this)">
+            <i class="fas fa-times"></i>
+        </button>
     `;
     container.appendChild(featureItem);
 }
@@ -467,7 +638,7 @@ function addFeature() {
 function removeFeature(button) {
     const container = document.getElementById('features-container');
     if (container.children.length > 1) {
-        button.parentElement.remove();
+        button.closest('.feature-item').remove();
     }
 }
 </script>

@@ -1,0 +1,43 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Users Management - Admin Panel{% endblock %}
+
+{% block head %}
+    <style>
+        .admin-content {
+            background: linear-gradient(to bottom right, #f0f4f8, #edf2f7);
+            min-height: 100vh;
+            padding-top: 2rem;
+        }
+        
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto 3rem;
+        }
+        
+        .dashboard-header {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            padding: 1.5rem 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .coming-soon {
+            color: #6b7280;
+            font-size: 1.1rem;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-content">
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <h2>Users Management</h2>
+            <p class="coming-soon">Coming Soon - User management functionality will be available in a future update.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

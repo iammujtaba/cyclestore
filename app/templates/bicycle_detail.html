@@ -43,9 +43,9 @@
             <!-- Product Info -->
             <div class="animate-fade-in">
                 <div class="mb-4">
-                    <span class="bg-primary text-white px-3 py-1 rounded-full text-sm">{{ bicycle.category.title() }}</span>
-                    {% if bicycle.in_stock %}
-                    <span class="bg-green-500 text-white px-3 py-1 rounded-full text-sm ml-2">In Stock</span>
+                    <span class="bg-primary text-white px-3 py-1 rounded-full text-sm">{{ bicycle.category.title() if bicycle.category else 'N/A' }}</span>
+                    {% if bicycle.stock_quantity and bicycle.stock_quantity > 0 %}
+                    <span class="bg-green-500 text-white px-3 py-1 rounded-full text-sm ml-2">In Stock ({{ bicycle.stock_quantity }})</span>
                     {% else %}
                     <span class="bg-red-500 text-white px-3 py-1 rounded-full text-sm ml-2">Out of Stock</span>
                     {% endif %}
@@ -81,15 +81,15 @@
                             </div>
                             <div>
                                 <span class="font-medium text-gray-700">Size:</span>
-                                <span class="text-gray-600 ml-2">{{ bicycle.size.title() }}</span>
+                                <span class="text-gray-600 ml-2">{{ bicycle.size.title() if bicycle.size else 'N/A' }}</span>
                             </div>
                             <div>
                                 <span class="font-medium text-gray-700">Category:</span>
-                                <span class="text-gray-600 ml-2">{{ bicycle.category.title() }}</span>
+                                <span class="text-gray-600 ml-2">{{ bicycle.category.title() if bicycle.category else 'N/A' }}</span>
                             </div>
                             <div>
                                 <span class="font-medium text-gray-700">Availability:</span>
-                                <span class="text-gray-600 ml-2">{% if bicycle.in_stock %}Available{% else %}Out of Stock{% endif %}</span>
+                                <span class="text-gray-600 ml-2">{% if bicycle.stock_quantity and bicycle.stock_quantity > 0 %}Available ({{ bicycle.stock_quantity }} in stock){% else %}Out of Stock{% endif %}</span>
                             </div>
                         </div>
                     </div>
@@ -97,10 +97,10 @@
                 
                 <!-- Action Buttons -->
                 <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 mb-8">
-                    <button class="flex-1 bg-primary text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors {% if not bicycle.in_stock %}opacity-50 cursor-not-allowed{% endif %}" {% if not bicycle.in_stock %}disabled{% endif %} id="add-to-cart">
+                    <button class="flex-1 bg-primary text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors {% if not (bicycle.stock_quantity and bicycle.stock_quantity > 0) %}opacity-50 cursor-not-allowed{% endif %}" {% if not (bicycle.stock_quantity and bicycle.stock_quantity > 0) %}disabled{% endif %} id="add-to-cart">
                         <i class="fas fa-shopping-cart mr-2"></i>Add to Cart
                     </button>
-                    <button class="flex-1 bg-secondary text-white py-3 px-6 rounded-lg font-semibold hover:bg-green-600 transition-colors" id="buy-now">
+                    <button class="flex-1 bg-secondary text-white py-3 px-6 rounded-lg font-semibold hover:bg-green-600 transition-colors {% if not (bicycle.stock_quantity and bicycle.stock_quantity > 0) %}opacity-50 cursor-not-allowed{% endif %}" {% if not (bicycle.stock_quantity and bicycle.stock_quantity > 0) %}disabled{% endif %} id="buy-now">
                         <i class="fas fa-bolt mr-2"></i>Buy Now
                     </button>
                     <button class="bg-gray-200 text-gray-700 py-3 px-4 rounded-lg hover:bg-gray-300 transition-colors" id="add-to-wishlist">
@@ -148,8 +148,8 @@
                             <ul class="space-y-1 text-gray-600">
                                 <li><strong>Brand:</strong> {{ bicycle.brand }}</li>
                                 <li><strong>Model:</strong> {{ bicycle.name }}</li>
-                                <li><strong>Category:</strong> {{ bicycle.category.title() }}</li>
-                                <li><strong>Size:</strong> {{ bicycle.size.title() }}</li>
+                                <li><strong>Category:</strong> {{ bicycle.category.title() if bicycle.category else 'N/A' }}</li>
+                                <li><strong>Size:</strong> {{ bicycle.size.title() if bicycle.size else 'N/A' }}</li>
                             </ul>
                         </div>
                         <div>

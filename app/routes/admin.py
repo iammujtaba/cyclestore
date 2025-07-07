@@ -66,10 +66,11 @@ async def admin_login(
     response.set_cookie(
         key="admin_session_token",
         value=session_token,
-        max_age=8*60*60,  # 8 hours
+        max_age=24*60*60,  # 24 hours
         httponly=True,
         secure=False,  # Set to True in production with HTTPS
-        samesite="lax"
+        samesite="lax",
+        path="/"  # Available for entire site
     )
     return response
 
@@ -98,20 +99,21 @@ async def admin_dashboard(
     accessory_count = db.query(Accessory).count()
     total_products = bicycle_count + accessory_count
     
-    # Get recent products
-    recent_bicycles = db.query(Bicycle).order_by(Bicycle.created_at.desc()).limit(5).all()
-    recent_accessories = db.query(Accessory).order_by(Accessory.created_at.desc()).limit(5).all()
+    # Get low stock items (stock < 10)
+    low_stock_bicycles = db.query(Bicycle).filter(Bicycle.stock_quantity < 10).count()
+    low_stock_accessories = db.query(Accessory).filter(Accessory.stock_quantity < 10).count()
+    low_stock_items = low_stock_bicycles + low_stock_accessories
     
     return templates.TemplateResponse("admin/dashboard.html", {
         "request": request,
         "admin": admin,
         "stats": {
-            "bicycle_count": bicycle_count,
-            "accessory_count": accessory_count,
-            "total_products": total_products
-        },
-        "recent_bicycles": recent_bicycles,
-        "recent_accessories": recent_accessories
+            "total_bicycles": bicycle_count,
+            "total_accessories": accessory_count,
+            "total_products": total_products,
+            "total_users": 0,  # Placeholder for future user management
+            "low_stock_items": low_stock_items
+        }
     })
 
 # Product Management Routes
@@ -153,7 +155,8 @@ async def admin_new_product(
         "request": request,
         "admin": admin,
         "product_type": product_type,
-        "action": "create"
+        "action": "create",
+        "product": None
     })
 
 @router.get("/products/{product_type}/{product_id}/edit", response_class=HTMLResponse)
@@ -194,28 +197,47 @@ async def admin_edit_product(
 @router.post("/products/create")
 async def admin_create_product(
     request: Request,
-    product_type: str = Form(...),
-    name: str = Form(...),
-    description: str = Form(...),
-    price: float = Form(...),
-    brand: str = Form(...),
-    category: str = Form(...),
-    # Bicycle specific fields
-    frame_size: Optional[str] = Form(None),
-    wheel_size: Optional[str] = Form(None),
-    gear_count: Optional[int] = Form(None),
-    brake_type: Optional[str] = Form(None),
-    suspension: Optional[str] = Form(None),
-    # Accessory specific fields
-    accessory_type: Optional[str] = Form(None),
-    compatibility: Optional[str] = Form(None),
-    # Common fields
-    stock_quantity: int = Form(10),
-    is_featured: bool = Form(False),
     db: Session = Depends(get_db),
     admin: Admin = Depends(require_admin)
 ):
-    """Create new product"""
+    """Create new product with enhanced features"""
+    
+    # Parse form data manually to handle features[] properly
+    form_data = await request.form()
+    
+    # Extract basic fields with proper type handling
+    product_type = str(form_data.get("product_type", ""))
+    name = str(form_data.get("name", ""))
+    description = str(form_data.get("description", ""))
+    price_str = form_data.get("price", "0")
+    price = float(price_str) if isinstance(price_str, str) else 0.0
+    brand = str(form_data.get("brand", ""))
+    category = str(form_data.get("category", ""))
+    
+    # Extract features[] as a list
+    features = form_data.getlist("features[]")
+    processed_features = [str(f).strip() for f in features if f and str(f).strip()]
+    
+    # Extract other fields
+    frame_size = str(form_data.get("frame_size", "")) if form_data.get("frame_size") else None
+    wheel_size = str(form_data.get("wheel_size", "")) if form_data.get("wheel_size") else None
+    gear_count_str = form_data.get("gear_count")
+    gear_count = int(gear_count_str) if gear_count_str and isinstance(gear_count_str, str) and gear_count_str.isdigit() else None
+    brake_type = str(form_data.get("brake_type", "")) if form_data.get("brake_type") else None
+    suspension = str(form_data.get("suspension", "")) if form_data.get("suspension") else None
+    size = str(form_data.get("size", "")) if form_data.get("size") else None
+    accessory_type = str(form_data.get("accessory_type", "")) if form_data.get("accessory_type") else None
+    compatibility = str(form_data.get("compatibility", "")) if form_data.get("compatibility") else None
+    stock_quantity_str = form_data.get("stock_quantity", "10")
+    stock_quantity = int(stock_quantity_str) if isinstance(stock_quantity_str, str) and stock_quantity_str.isdigit() else 10
+    is_featured = form_data.get("is_featured") == "true"
+    in_stock = form_data.get("in_stock") == "true"
+    
+    # Handle image uploads
+    images = []
+    for key, value in form_data.items():
+        if key == "images" and hasattr(value, 'filename') and hasattr(value, 'content_type'):
+            images.append(value)
     
     product_data = {
         "name": name,
@@ -223,8 +245,11 @@ async def admin_create_product(
         "price": price,
         "brand": brand,
         "category": category,
+        "size": size,
         "stock_quantity": stock_quantity,
-        "is_featured": is_featured
+        "is_featured": is_featured,
+        "in_stock": in_stock,
+        "features": processed_features
     }
     
     try:
@@ -246,6 +271,23 @@ async def admin_create_product(
         else:
             raise HTTPException(status_code=400, detail="Invalid product type")
         
+        # Handle image uploads
+        if images and product:
+            from app.services.image_service import image_service
+            
+            for image in images:
+                if hasattr(image, 'filename') and hasattr(image, 'content_type') and image.filename and image.content_type and image.content_type.startswith('image/'):
+                    try:
+                        result = await image_service.save_image(image, int(product.id), product_type)
+                        if result['success'] and not product.image:
+                            # Set first uploaded image as primary
+                            if product_type == "bicycle":
+                                admin_crud.update_bicycle(db, int(product.id), {"image": result['primary_path']})
+                            else:
+                                admin_crud.update_accessory(db, int(product.id), {"image": result['primary_path']})
+                    except Exception as img_error:
+                        print(f"Error uploading image {image.filename}: {img_error}")
+        
         return RedirectResponse(url="/admin/products", status_code=302)
     
     except Exception as e:
@@ -254,6 +296,7 @@ async def admin_create_product(
             "admin": admin,
             "product_type": product_type,
             "action": "create",
+            "product": None,
             "error": f"Error creating product: {str(e)}"
         })
 
@@ -262,27 +305,46 @@ async def admin_update_product(
     request: Request,
     product_type: str,
     product_id: int,
-    name: str = Form(...),
-    description: str = Form(...),
-    price: float = Form(...),
-    brand: str = Form(...),
-    category: str = Form(...),
-    # Bicycle specific fields
-    frame_size: Optional[str] = Form(None),
-    wheel_size: Optional[str] = Form(None),
-    gear_count: Optional[int] = Form(None),
-    brake_type: Optional[str] = Form(None),
-    suspension: Optional[str] = Form(None),
-    # Accessory specific fields
-    accessory_type: Optional[str] = Form(None),
-    compatibility: Optional[str] = Form(None),
-    # Common fields
-    stock_quantity: int = Form(10),
-    is_featured: bool = Form(False),
     db: Session = Depends(get_db),
     admin: Admin = Depends(require_admin)
 ):
-    """Update existing product"""
+    """Update existing product with enhanced features"""
+    
+    # Parse form data manually to handle features[] properly
+    form_data = await request.form()
+    
+    # Extract basic fields with proper type handling
+    name = str(form_data.get("name", ""))
+    description = str(form_data.get("description", ""))
+    price_str = form_data.get("price", "0")
+    price = float(price_str) if isinstance(price_str, str) else 0.0
+    brand = str(form_data.get("brand", ""))
+    category = str(form_data.get("category", ""))
+    
+    # Extract features[] as a list
+    features = form_data.getlist("features[]")
+    processed_features = [str(f).strip() for f in features if f and str(f).strip()]
+    
+    # Extract other fields
+    frame_size = str(form_data.get("frame_size", "")) if form_data.get("frame_size") else None
+    wheel_size = str(form_data.get("wheel_size", "")) if form_data.get("wheel_size") else None
+    gear_count_str = form_data.get("gear_count")
+    gear_count = int(gear_count_str) if gear_count_str and isinstance(gear_count_str, str) and gear_count_str.isdigit() else None
+    brake_type = str(form_data.get("brake_type", "")) if form_data.get("brake_type") else None
+    suspension = str(form_data.get("suspension", "")) if form_data.get("suspension") else None
+    size = str(form_data.get("size", "")) if form_data.get("size") else None
+    accessory_type = str(form_data.get("accessory_type", "")) if form_data.get("accessory_type") else None
+    compatibility = str(form_data.get("compatibility", "")) if form_data.get("compatibility") else None
+    stock_quantity_str = form_data.get("stock_quantity", "10")
+    stock_quantity = int(stock_quantity_str) if isinstance(stock_quantity_str, str) and stock_quantity_str.isdigit() else 10
+    is_featured = form_data.get("is_featured") == "true"
+    in_stock = form_data.get("in_stock") == "true"
+    
+    # Handle image uploads
+    images = []
+    for key, value in form_data.items():
+        if key == "images" and hasattr(value, 'filename') and hasattr(value, 'content_type'):
+            images.append(value)
     
     product_data = {
         "name": name,
@@ -290,8 +352,11 @@ async def admin_update_product(
         "price": price,
         "brand": brand,
         "category": category,
+        "size": size,
         "stock_quantity": stock_quantity,
-        "is_featured": is_featured
+        "is_featured": is_featured,
+        "in_stock": in_stock,
+        "features": processed_features
     }
     
     try:
@@ -315,6 +380,23 @@ async def admin_update_product(
         
         if not product:
             raise HTTPException(status_code=404, detail="Product not found")
+        
+        # Handle image uploads
+        if images:
+            from app.services.image_service import image_service
+            
+            for image in images:
+                if hasattr(image, 'filename') and hasattr(image, 'content_type') and image.filename and image.content_type and image.content_type.startswith('image/'):
+                    try:
+                        result = await image_service.save_image(image, product_id, product_type)
+                        if result['success'] and not product.image:
+                            # Set first uploaded image as primary
+                            if product_type == "bicycle":
+                                admin_crud.update_bicycle(db, product_id, {"image": result['primary_path']})
+                            else:
+                                admin_crud.update_accessory(db, product_id, {"image": result['primary_path']})
+                    except Exception as img_error:
+                        print(f"Error uploading image {image.filename}: {img_error}")
         
         return RedirectResponse(url="/admin/products", status_code=302)
     
@@ -629,3 +711,165 @@ async def admin_import_products(
     
     except Exception as e:
         return JSONResponse({"success": False, "error": str(e)}, status_code=500)
+
+# Enhanced Image Management Routes
+@router.post("/products/{product_type}/{product_id}/images/upload")
+async def admin_upload_product_images(
+    product_type: str,
+    product_id: int,
+    images: List[UploadFile] = File(...),
+    db: Session = Depends(get_db),
+    admin: Admin = Depends(require_admin)
+):
+    """Upload multiple images for a product"""
+    
+    if product_type not in ['bicycle', 'accessory']:
+        raise HTTPException(status_code=400, detail="Invalid product type")
+    
+    # Verify product exists
+    if product_type == 'bicycle':
+        product = db.query(Bicycle).filter(Bicycle.id == product_id).first()
+    else:
+        product = db.query(Accessory).filter(Accessory.id == product_id).first()
+    
+    if not product:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    uploaded_images = []
+    errors = []
+    
+    for image in images:
+        try:
+            # Validate file type
+            if not image.content_type.startswith('image/'):
+                errors.append(f"Invalid file type for {image.filename}")
+                continue
+            
+            # Validate file size (5MB limit)
+            content = await image.read()
+            if len(content) > 5 * 1024 * 1024:  # 5MB
+                errors.append(f"File too large: {image.filename}")
+                continue
+            
+            # Reset file position
+            await image.seek(0)
+            
+            # Save using image service
+            from app.services.image_service import image_service
+            result = await image_service.save_image(image, product_id, product_type)
+            
+            if result['success']:
+                uploaded_images.append(result['primary_path'])
+                
+                # Update product's primary image if it doesn't have one
+                if not product.image:
+                    product.image = result['primary_path']
+                    db.commit()
+            else:
+                errors.append(f"Failed to save {image.filename}")
+        
+        except Exception as e:
+            errors.append(f"Error processing {image.filename}: {str(e)}")
+    
+    return JSONResponse({
+        "success": True,
+        "uploaded_count": len(uploaded_images),
+        "uploaded_images": uploaded_images,
+        "errors": errors
+    })
+
+@router.delete("/products/{product_type}/{product_id}/images/{image_name}")
+async def admin_delete_product_image(
+    product_type: str,
+    product_id: int,
+    image_name: str,
+    db: Session = Depends(get_db),
+    admin: Admin = Depends(require_admin)
+):
+    """Delete a specific product image"""
+    
+    try:
+        # Find and delete the image record
+        image_record = db.query(ProductImage).filter(
+            ProductImage.product_id == product_id,
+            ProductImage.product_type == product_type,
+            ProductImage.image_name == image_name
+        ).first()
+        
+        if image_record:
+            # Delete physical file
+            if os.path.exists(image_record.absolute_path):
+                os.remove(image_record.absolute_path)
+            
+            # Delete database record
+            db.delete(image_record)
+            db.commit()
+        
+        return JSONResponse({"success": True, "message": "Image deleted successfully"})
+    
+    except Exception as e:
+        return JSONResponse({"success": False, "error": str(e)}, status_code=500)
+
+@router.post("/products/{product_type}/{product_id}/images/set-primary")
+async def admin_set_primary_image(
+    product_type: str,
+    product_id: int,
+    request: Request,
+    db: Session = Depends(get_db),
+    admin: Admin = Depends(require_admin)
+):
+    """Set an image as the primary product image"""
+    
+    data = await request.json()
+    image_path = data.get('image_path')
+    
+    if not image_path:
+        raise HTTPException(status_code=400, detail="Image path required")
+    
+    try:
+        # Update product's primary image
+        if product_type == 'bicycle':
+            product = db.query(Bicycle).filter(Bicycle.id == product_id).first()
+        else:
+            product = db.query(Accessory).filter(Accessory.id == product_id).first()
+        
+        if not product:
+            raise HTTPException(status_code=404, detail="Product not found")
+        
+        product.image = image_path
+        db.commit()
+        
+        # Update image records to set primary flag
+        db.query(ProductImage).filter(
+            ProductImage.product_id == product_id,
+            ProductImage.product_type == product_type
+        ).update({"is_primary": False})
+        
+        db.query(ProductImage).filter(
+            ProductImage.product_id == product_id,
+            ProductImage.product_type == product_type,
+            ProductImage.image_path.contains(image_path.split('/')[-1])
+        ).update({"is_primary": True})
+        
+        db.commit()
+        
+        return JSONResponse({"success": True, "message": "Primary image updated"})
+    
+    except Exception as e:
+        return JSONResponse({"success": False, "error": str(e)}, status_code=500)
+
+# Create global instance
+admin_auth_service = AdminAuthService()
+
+@router.get("/users", response_class=HTMLResponse)
+async def admin_users(
+    request: Request,
+    db: Session = Depends(get_db),
+    admin: Admin = Depends(require_admin)
+):
+    """Admin users management page (placeholder)"""
+    return templates.TemplateResponse("admin/users.html", {
+        "request": request,
+        "admin": admin,
+        "users": []  # Placeholder for future user management
+    })
