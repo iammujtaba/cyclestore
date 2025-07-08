@@ -30,9 +30,17 @@ if __name__ == "__main__":
     print(f"🌍 Environment: {settings.ENVIRONMENT}")
     print(f"🗄️ Database: {settings.DATABASE_URL}")
     
+    # Get host and port from environment or use defaults
+    host = os.getenv("HOST", "0.0.0.0")
+    port = int(os.getenv("PORT", "8000"))
+    
+    print(f"🏠 Server: {host}:{port}")
+    
     # Run with uvicorn
     uvicorn.run(
         "app.main:app",
+        host=host,
+        port=port,
         access_log=True,
         reload=False
     )
