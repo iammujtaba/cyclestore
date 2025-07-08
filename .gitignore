@@ -1,7 +1,55 @@
-#python
+# Python
 *.pyc
 __pycache__/
 .venv/
-.vscode/
-.mypy_cache/
 venv/
+.mypy_cache/
+
+# IDEs
+.vscode/
+.idea/
+
+# Environment files
+.env
+.env.local
+.env.production
+.env.development
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+cyclestore_production.db
+backup_*.db
+
+# Logs
+logs/
+*.log
+
+# Uploads
+app/static/images/products/*.png
+app/static/images/products/*.jpg
+app/static/images/products/*.jpeg
+app/static/images/accessories/*.png
+app/static/images/accessories/*.jpg
+app/static/images/accessories/*.jpeg
+app/static/images/thumbnails/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+.dockerignore
+
+# SSL certificates
+ssl/
+*.pem
+*.crt
+*.key
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*~

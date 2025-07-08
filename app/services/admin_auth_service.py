@@ -2,13 +2,13 @@
 Admin Authentication Service for Supreme Cycle & Rickshaw Company
 Handles admin login, session management
 """
-
+import os
 from sqlalchemy.orm import Session
 from app.models.admin import Admin, AdminSession
-from fastapi import Request, HTTPException, status
+from fastapi import Request
 from datetime import datetime, timedelta
 from typing import Optional
-import secrets
+
 
 class AdminAuthService:
     """Service for handling admin authentication"""
@@ -113,10 +113,10 @@ class AdminAuthService:
 
         # Create default admin with standard credentials
         admin = Admin(
-            username="admin",
-            hashed_password=Admin.hash_password("admin123"),
+            username=os.getenv("ADMIN_USERNAME"),
+            hashed_password=Admin.hash_password(os.getenv("ADMIN_PASSWORD", "admin123")),
             full_name="Administrator",
-            email="admin@supremecycle.com",
+            email="admin@supremecycle.in",
             is_super_admin=True
         )
 

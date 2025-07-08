@@ -17,7 +17,6 @@ from app.routes.admin import router as admin_router
 from app.services.auth_service import auth_service
 from app.services.admin_auth_service import admin_auth_service
 
-# Set up logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -51,10 +50,11 @@ async def lifespan(app: FastAPI):
     # Shutdown (if needed)
 
 app = FastAPI(
-    title=settings.PROJECT_NAME,
+    title="Supreme Cycle & Rickshaw Company API",
+    version="1.0.0",
     lifespan=lifespan,
-    docs_url="/docs" if settings.DEBUG else None,
-    redoc_url="/redoc" if settings.DEBUG else None
+    docs_url=settings.docs_url,
+    redoc_url=settings.redoc_url
 )
 
 # Add security middleware

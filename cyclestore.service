@@ -1,0 +1,20 @@
+[Unit]
+Description=Supreme Cycle & Rickshaw Company Web Application
+After=network.target
+
+[Service]
+Type=exec
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/cyclestore
+Environment=PATH=/var/www/cyclestore/.venv/bin
+ExecStart=/var/www/cyclestore/.venv/bin/python production_start.py
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=mixed
+TimeoutStopSec=5
+PrivateTmp=true
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
