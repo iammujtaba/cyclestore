@@ -113,7 +113,7 @@ class AdminAuthService:
 
         # Create default admin with standard credentials
         admin = Admin(
-            username=os.getenv("ADMIN_USERNAME"),
+            username=os.getenv("ADMIN_USERNAME","superuser"),
             hashed_password=Admin.hash_password(os.getenv("ADMIN_PASSWORD", "admin123")),
             full_name="Administrator",
             email="admin@supremecycle.in",
