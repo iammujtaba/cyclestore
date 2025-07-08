@@ -61,12 +61,37 @@ class Bicycle(Base):
     
     def get_primary_image(self) -> str:
         """Get primary image URL"""
-        return getattr(self, 'image', None) or "/static/images/default-bicycle.svg"
+        # First try to get from image service
+        from app.services.image_service import image_service
+        product_id = getattr(self, 'id', None)
+        if product_id:
+            service_images = image_service.get_product_images(product_id, 'bicycle')
+            if service_images:
+                return service_images[0]
+        
+        # Fallback to database image field
+        image_field = getattr(self, 'image', None)
+        if image_field:
+            # Ensure image path starts with /static/
+            if not image_field.startswith('/static/'):
+                return f"/static/{image_field.lstrip('/')}"
+            return image_field
+        
+        # Default fallback
+        return "/static/images/default-bicycle.svg"
     
     def get_image_gallery(self) -> List[str]:
         """Get all images for this bicycle"""
-        # For now, return the primary image. Can be enhanced with ProductImage relationship
-        return [self.get_primary_image()]
+        from app.services.image_service import image_service
+        product_id = getattr(self, 'id', None)
+        if product_id:
+            service_images = image_service.get_product_images(product_id, 'bicycle')
+            if service_images:
+                return service_images
+        
+        # Fallback to primary image
+        primary = self.get_primary_image()
+        return [primary] if primary else []
 
 class Accessory(Base):
     __tablename__ = "accessories"
@@ -99,8 +124,34 @@ class Accessory(Base):
     
     def get_primary_image(self) -> str:
         """Get primary image URL"""
-        return getattr(self, 'image', None) or "/static/images/default-accessory.svg"
+        # First try to get from image service
+        from app.services.image_service import image_service
+        product_id = getattr(self, 'id', None)
+        if product_id:
+            service_images = image_service.get_product_images(product_id, 'accessory')
+            if service_images:
+                return service_images[0]
+        
+        # Fallback to database image field
+        image_field = getattr(self, 'image', None)
+        if image_field:
+            # Ensure image path starts with /static/
+            if not image_field.startswith('/static/'):
+                return f"/static/{image_field.lstrip('/')}"
+            return image_field
+        
+        # Default fallback
+        return "/static/images/default-accessory.svg"
     
     def get_image_gallery(self) -> List[str]:
         """Get all images for this accessory"""
-        return [self.get_primary_image()]
+        from app.services.image_service import image_service
+        product_id = getattr(self, 'id', None)
+        if product_id:
+            service_images = image_service.get_product_images(product_id, 'accessory')
+            if service_images:
+                return service_images
+        
+        # Fallback to primary image
+        primary = self.get_primary_image()
+        return [primary] if primary else []

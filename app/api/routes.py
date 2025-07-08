@@ -1,15 +1,14 @@
-from fastapi import APIRouter, Depends, Request, Form, UploadFile, File, HTTPException, Response, Cookie
+from fastapi import APIRouter, Depends, Request, Form, UploadFile, File, HTTPException
 from sqlalchemy.orm import Session
 from app.db.session import get_db
 from app.crud import product as crud_product
 from app.crud import user as crud_user
-from app.schemas import product as schema_product
 from app.services.image_service import image_service
 from app.services.auth_service import auth_service
 from app.models.user import User
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
-from typing import Optional, List
+from typing import Optional
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
@@ -215,20 +214,6 @@ async def delete_product_images(product_type: str, product_id: int, db: Session 
         crud_product.update_accessory(db, product_id, update_data)
     
     return JSONResponse(content={"success": True, "message": "Images deleted successfully"})
-
-# Commented out to avoid conflict with admin routes
-# @router.get("/admin/products", response_class=HTMLResponse)
-# async def admin_products(request: Request, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-#     """Simple admin page for managing products and images"""
-#     bicycles = crud_product.get_bicycles(db)
-#     accessories = crud_product.get_accessories(db)
-#     
-#     return templates.TemplateResponse("admin/products.html", {
-#         "request": request,
-#         "bicycles": bicycles,
-#         "accessories": accessories,
-#         "user": current_user
-#     })
 
 # Authentication Routes
 @router.get("/register", response_class=HTMLResponse)

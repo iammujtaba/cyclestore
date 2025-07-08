@@ -61,12 +61,19 @@
                 <div class="mb-6">
                     <h3 class="text-lg font-semibold text-gray-800 mb-3">Key Features</h3>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        {% for feature in bicycle.features %}
-                        <div class="flex items-center">
-                            <i class="fas fa-check text-green-500 mr-2"></i>
-                            <span class="text-gray-700">{{ feature }}</span>
-                        </div>
-                        {% endfor %}
+                        {% if bicycle.features %}
+                            {% for feature in bicycle.features %}
+                            <div class="flex items-center">
+                                <i class="fas fa-check text-green-500 mr-2"></i>
+                                <span class="text-gray-700">{{ feature }}</span>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="text-gray-500 italic">
+                                <i class="fas fa-info-circle mr-2"></i>
+                                Features will be updated soon
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
                 
@@ -155,9 +162,13 @@
                         <div>
                             <h4 class="font-semibold mb-2">Features</h4>
                             <ul class="space-y-1 text-gray-600">
-                                {% for feature in bicycle.features %}
-                                <li><i class="fas fa-check text-green-500 mr-2"></i>{{ feature }}</li>
-                                {% endfor %}
+                                {% if bicycle.features %}
+                                    {% for feature in bicycle.features %}
+                                    <li><i class="fas fa-check text-green-500 mr-2"></i>{{ feature }}</li>
+                                    {% endfor %}
+                                {% else %}
+                                    <li class="text-gray-500 italic"><i class="fas fa-info-circle mr-2"></i>Features will be updated soon</li>
+                                {% endif %}
                             </ul>
                         </div>
                     </div>

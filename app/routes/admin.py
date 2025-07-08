@@ -3,7 +3,7 @@ Admin routes for Supreme Cycle & Rickshaw Company
 Handles admin authentication, product management, and admin panel
 """
 
-from fastapi import APIRouter, Depends, Request, Form, UploadFile, File, HTTPException, Response
+from fastapi import APIRouter, Depends, Request, Form, UploadFile, File, HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session

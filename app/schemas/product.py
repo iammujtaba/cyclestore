@@ -18,7 +18,7 @@ class BicycleCreate(BicycleBase):
 class Bicycle(BicycleBase):
     id: int
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class AccessoryBase(BaseModel):
     name: str
@@ -35,4 +35,4 @@ class AccessoryCreate(AccessoryBase):
 class Accessory(AccessoryBase):
     id: int
     class Config:
-        orm_mode = True
+        from_attributes = True
