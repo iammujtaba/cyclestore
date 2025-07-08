@@ -460,3 +460,19 @@ async def update_profile(
         "user": updated_user,
         "success": "Profile updated successfully!"
     })
+
+@router.get("/accessory/{accessory_id}", response_class=HTMLResponse)
+async def accessory_detail(accessory_id: int, request: Request, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    accessory = crud_product.get_accessory(db, accessory_id)
+    if not accessory:
+        return templates.TemplateResponse("404.html", {"request": request, "user": current_user})
+    
+    related_accessories = crud_product.get_accessories(db, category=accessory.category)
+    related_accessories = [acc for acc in related_accessories if acc.id != accessory_id][:3]
+    
+    return templates.TemplateResponse("accessory_detail.html", {
+        "request": request,
+        "accessory": accessory,
+        "related_accessories": related_accessories,
+        "user": current_user
+    })
