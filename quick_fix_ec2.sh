@@ -26,11 +26,13 @@ docker compose exec cyclestore curl -f http://localhost:8000/health 2>/dev/null 
 
 echo ""
 echo "🔗 Your application should now be accessible at:"
-echo "   http://$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4 2>/dev/null || echo 'YOUR-EC2-IP'):8000"
+echo "   http://$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4 2>/dev/null || echo 'YOUR-EC2-IP')/"
+echo "   http://supremecycle.in/ (if DNS is configured)"
 echo ""
 echo "📡 Make sure your EC2 Security Group allows:"
-echo "   - Inbound TCP port 8000 from 0.0.0.0/0"
-echo "   - Inbound TCP port 80 from 0.0.0.0/0 (if using nginx)"
+echo "   - Inbound TCP port 80 from 0.0.0.0/0 (HTTP)"
+echo "   - Inbound TCP port 443 from 0.0.0.0/0 (HTTPS - for future SSL)"
+echo "   - NO need to expose port 8000 (nginx handles routing)"
 
 echo ""
 echo "🔍 If still not working, run: ./troubleshoot_docker.sh"
