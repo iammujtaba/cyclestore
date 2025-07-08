@@ -111,10 +111,19 @@ class AdminAuthService:
         if existing_admin:
             return existing_admin
 
-        # Create default admin with standard credentials
+        # Get credentials from environment with fallbacks
+        admin_username = os.getenv("ADMIN_USERNAME", "superuser")
+        admin_password = os.getenv("ADMIN_PASSWORD", "admin123")
+        
+        # Ensure we have valid credentials
+        if not admin_username or not admin_password:
+            admin_username = "superuser"
+            admin_password = "admin123"
+
+        # Create default admin with environment credentials
         admin = Admin(
-            username=os.getenv("ADMIN_USERNAME","superuser"),
-            hashed_password=Admin.hash_password(os.getenv("ADMIN_PASSWORD", "admin123")),
+            username=admin_username,
+            hashed_password=Admin.hash_password(admin_password),
             full_name="Administrator",
             email="admin@supremecycle.in",
             is_super_admin=True
