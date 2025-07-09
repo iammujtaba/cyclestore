@@ -8,6 +8,7 @@ import os
 import sys
 import logging
 from pathlib import Path
+from dotenv import load_dotenv
 
 # Add the app directory to Python path
 app_dir = Path(__file__).parent / "app"
@@ -72,4 +73,5 @@ def main():
         sys.exit(1)
 
 if __name__ == "__main__":
+    load_dotenv('.env.production')
     main()

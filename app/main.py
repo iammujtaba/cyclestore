@@ -15,36 +15,11 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    # Startup
-    try:
-        from app.db.init_db import seed_database
-        seed_database()
-        logger.info("Database seeded successfully")
-    except Exception as e:
-        logger.error(f"Database seeding failed: {e}")
-        # Continue startup even if seeding fails
-    
-    # Create default admin user
-    try:
-        from app.db.session import SessionLocal
-        db = SessionLocal()
-        try:
-            admin_auth_service.create_default_admin(db)
-            logger.info("Default admin created/verified successfully")
-        finally:
-            db.close()
-    except Exception as e:
-        logger.error(f"Admin creation failed: {e}")
-    
-    yield
-    # Shutdown (if needed)
+
 
 app = FastAPI(
     title="Supreme Cycle & Rickshaw Company API",
     version="1.0.0",
-    lifespan=lifespan,
     docs_url=settings.docs_url,
     redoc_url=settings.redoc_url
 )
