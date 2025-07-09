@@ -62,7 +62,7 @@ if [ -f "/etc/letsencrypt/live/supremecycle.in/fullchain.pem" ]; then
     
     # Start services with SSL
     echo "🚀 Starting services with HTTPS..."
-    docker-compose up -d
+    docker compose up
     
     echo ""
     echo "🎉 SSL setup completed successfully!"
@@ -85,6 +85,6 @@ else
     echo "4. Wait for DNS propagation (5-60 minutes)"
     
     # Restart without SSL
-    docker-compose up -d
+    docker compose up -d
     exit 1
 fi

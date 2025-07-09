@@ -44,10 +44,10 @@ if ! command -v docker &> /dev/null; then
     exit 1
 fi
 
-if ! command -v docker-compose &> /dev/null; then
+if ! command -v docker compose &> /dev/null; then
     print_error "Docker Compose is not installed. Please install it first:"
-    echo "  sudo curl -L \"https://github.com/docker/compose/releases/download/v2.24.0/docker-compose-\$(uname -s)-\$(uname -m)\" -o /usr/local/bin/docker-compose"
-    echo "  sudo chmod +x /usr/local/bin/docker-compose"
+    echo "  sudo curl -L \"https://github.com/docker/compose/releases/download/v2.24.0/docker compose-\$(uname -s)-\$(uname -m)\" -o /usr/local/bin/docker compose"
+    echo "  sudo chmod +x /usr/local/bin/docker compose"
     exit 1
 fi
 
@@ -67,18 +67,18 @@ print_step "🔨 Building and starting the application..."
 mkdir -p logs data ssl
 
 # Pull latest images and rebuild
-docker-compose pull
-docker-compose build --no-cache
+docker compose pull
+docker compose build --no-cache
 
 # Start services
-docker-compose up -d
+docker compose up -d
 
 # Wait for services to start
 print_step "⏳ Waiting for services to start..."
 sleep 10
 
 # Check if services are running
-if docker-compose ps | grep -q "Up"; then
+if docker compose ps | grep -q "Up"; then
     print_success "Services are running successfully!"
     
     echo ""
@@ -102,21 +102,21 @@ if docker-compose ps | grep -q "Up"; then
         print_success "Application health check passed"
     else
         print_warning "Application might still be starting up"
-        echo "Check logs with: docker-compose logs"
+        echo "Check logs with: docker compose logs"
     fi
     
     echo ""
     echo "📊 Useful commands:"
-    echo "   • View logs: docker-compose logs -f"
-    echo "   • Restart: docker-compose restart"
-    echo "   • Stop: docker-compose down"
+    echo "   • View logs: docker compose logs -f"
+    echo "   • Restart: docker compose restart"
+    echo "   • Stop: docker compose down"
     echo "   • Setup SSL: ./setup_ssl.sh"
     echo ""
     
 else
     print_error "Some services failed to start"
     echo "Check the logs for more details:"
-    echo "  docker-compose logs"
+    echo "  docker compose logs"
     exit 1
 fi
 
