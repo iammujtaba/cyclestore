@@ -12,10 +12,10 @@ class Admin(Base):
     __tablename__ = "admins"
     
     id = Column(Integer, primary_key=True, index=True)
-    username = Column(String, unique=True, index=True, nullable=False)
-    hashed_password = Column(String, nullable=False)
-    full_name = Column(String, nullable=False)
-    email = Column(String, unique=True, index=True)
+    username = Column(String(50), unique=True, index=True, nullable=False)
+    hashed_password = Column(String(255), nullable=False)
+    full_name = Column(String(100), nullable=False)
+    email = Column(String(100), unique=True, index=True)
     is_active = Column(Boolean, default=True)
     is_super_admin = Column(Boolean, default=False)
     created_at = Column(DateTime, server_default=func.now())
@@ -49,12 +49,12 @@ class AdminSession(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     admin_id = Column(Integer, nullable=False)
-    session_token = Column(String, unique=True, index=True, nullable=False)
+    session_token = Column(String(255), unique=True, index=True, nullable=False)
     expires_at = Column(DateTime, nullable=False)
     created_at = Column(DateTime, server_default=func.now())
     is_active = Column(Boolean, default=True)
-    ip_address = Column(String)
-    user_agent = Column(String)
+    ip_address = Column(String(45))
+    user_agent = Column(Text)
     
     @staticmethod
     def generate_token() -> str:

@@ -12,16 +12,16 @@ class User(Base):
     __tablename__ = "users"
     
     id = Column(Integer, primary_key=True, index=True)
-    email = Column(String, unique=True, index=True, nullable=False)
-    username = Column(String, unique=True, index=True, nullable=False)
-    first_name = Column(String, nullable=False)
-    last_name = Column(String, nullable=False)
-    hashed_password = Column(String, nullable=False)
-    phone = Column(String)
+    email = Column(String(100), unique=True, index=True, nullable=False)
+    username = Column(String(50), unique=True, index=True, nullable=False)
+    first_name = Column(String(50), nullable=False)
+    last_name = Column(String(50), nullable=False)
+    hashed_password = Column(String(255), nullable=False)
+    phone = Column(String(20))
     address = Column(Text)
-    city = Column(String)
-    state = Column(String)
-    pincode = Column(String)
+    city = Column(String(50))
+    state = Column(String(50))
+    pincode = Column(String(10))
     is_active = Column(Boolean, default=True)
     is_verified = Column(Boolean, default=False)
     created_at = Column(DateTime, server_default=func.now())
@@ -67,12 +67,12 @@ class UserSession(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, nullable=False)
-    session_token = Column(String, unique=True, index=True, nullable=False)
+    session_token = Column(String(255), unique=True, index=True, nullable=False)
     expires_at = Column(DateTime, nullable=False)
     created_at = Column(DateTime, server_default=func.now())
     is_active = Column(Boolean, default=True)
-    ip_address = Column(String)
-    user_agent = Column(String)
+    ip_address = Column(String(45))
+    user_agent = Column(String(255))
     
     @staticmethod
     def generate_token() -> str:

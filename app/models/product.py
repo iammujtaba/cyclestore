@@ -9,10 +9,10 @@ class ProductImage(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     product_id = Column(Integer, nullable=False)  # Foreign key to bicycle/accessory
-    product_type = Column(String, nullable=False)  # 'bicycle' or 'accessory'
-    image_path = Column(String, nullable=False)  # Relative path to image
-    image_name = Column(String, nullable=False)  # Original filename
-    image_alt = Column(String)  # Alt text for accessibility
+    product_type = Column(String(20), nullable=False)  # 'bicycle' or 'accessory'
+    image_path = Column(String(255), nullable=False)  # Relative path to image
+    image_name = Column(String(255), nullable=False)  # Original filename
+    image_alt = Column(String(255))  # Alt text for accessibility
     is_primary = Column(Boolean, default=False)  # Primary product image
     display_order = Column(Integer, default=0)  # Order for image gallery
     created_at = Column(DateTime, server_default=func.now())
@@ -31,24 +31,24 @@ class Bicycle(Base):
     __tablename__ = "bicycles"
     
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, nullable=False)
-    category = Column(String, nullable=False)
+    name = Column(String(100), nullable=False)
+    category = Column(String(50), nullable=False)
     price = Column(Float, nullable=False)
     
     # Keep legacy image field for backward compatibility
-    image = Column(String)  # Primary image path
+    image = Column(String(255))  # Primary image path
     
     # Basic product fields
-    brand = Column(String)
+    brand = Column(String(50))
     description = Column(Text)
-    size = Column(String)  # Legacy field for compatibility
+    size = Column(String(20))  # Legacy field for compatibility
     
     # Extended bicycle-specific fields
-    frame_size = Column(String)  # S, M, L, XL, or specific measurements
-    wheel_size = Column(String)  # 26", 27.5", 29", etc.
+    frame_size = Column(String(20))  # S, M, L, XL, or specific measurements
+    wheel_size = Column(String(20))  # 26", 27.5", 29", etc.
     gear_count = Column(Integer)  # Number of gears
-    brake_type = Column(String)  # Disc, Rim, Hydraulic, etc.
-    suspension = Column(String)  # None, Front, Full, etc.
+    brake_type = Column(String(50))  # Disc, Rim, Hydraulic, etc.
+    suspension = Column(String(50))  # None, Front, Full, etc.
     
     # Admin/inventory fields
     stock_quantity = Column(Integer, default=0)
@@ -97,21 +97,21 @@ class Accessory(Base):
     __tablename__ = "accessories"
     
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, nullable=False)
-    category = Column(String, nullable=False)
+    name = Column(String(100), nullable=False)
+    category = Column(String(50), nullable=False)
     price = Column(Float, nullable=False)
     
     # Keep legacy image field for backward compatibility
-    image = Column(String)  # Primary image path
+    image = Column(String(255))  # Primary image path
     
     # Basic product fields
-    brand = Column(String)
+    brand = Column(String(50))
     description = Column(Text)
-    size = Column(String)
+    size = Column(String(20))
     
     # Accessory-specific fields
-    accessory_type = Column(String)  # Helmet, Light, Lock, etc.
-    compatibility = Column(String)  # Compatible bike types or universal
+    accessory_type = Column(String(50))  # Helmet, Light, Lock, etc.
+    compatibility = Column(String(100))  # Compatible bike types or universal
     
     # Admin/inventory fields
     stock_quantity = Column(Integer, default=0)
