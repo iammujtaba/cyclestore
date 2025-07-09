@@ -21,9 +21,10 @@ COPY . .
 # Create necessary directories
 RUN mkdir -p logs app/static/images/products app/static/images/accessories app/static/images/thumbnails
 
-# Create non-root user
+# Create non-root user and set permissions
 RUN adduser --disabled-password --gecos '' --shell /bin/bash appuser && \
-    chown -R appuser:appuser /app
+    chown -R appuser:appuser /app && \
+    chmod -R 755 /app/logs
 USER appuser
 
 # Expose port

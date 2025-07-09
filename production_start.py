@@ -14,14 +14,27 @@ app_dir = Path(__file__).parent / "app"
 sys.path.insert(0, str(app_dir))
 
 # Set up logging
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    handlers=[
-        logging.StreamHandler(),
-        logging.FileHandler("logs/app.log", mode="a")
-    ]
-)
+def setup_logging():
+    """Set up logging with proper error handling"""
+    log_handlers = [logging.StreamHandler()]
+    
+    # Try to set up file logging, but don't fail if we can't
+    try:
+        # Create logs directory if it doesn't exist
+        Path("logs").mkdir(exist_ok=True)
+        log_handlers.append(logging.FileHandler("logs/app.log", mode="a"))
+    except (PermissionError, OSError) as e:
+        print(f"Warning: Could not set up file logging: {e}")
+        print("Continuing with console logging only...")
+    
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        handlers=log_handlers
+    )
+
+# Set up logging
+setup_logging()
 
 logger = logging.getLogger(__name__)
 
@@ -30,9 +43,6 @@ def main():
     try:
         # Ensure we're in production mode
         os.environ.setdefault("ENVIRONMENT", "production")
-        
-        # Create logs directory if it doesn't exist
-        Path("logs").mkdir(exist_ok=True)
         
         logger.info("Starting Supreme Cycle & Rickshaw Company application in production mode")
 
