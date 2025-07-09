@@ -7,7 +7,6 @@ services:
       - "8000"
     environment:
       - ENVIRONMENT=production
-      - DATABASE_URL=sqlite:///./cyclestore_production.db
       - SECRET_KEY=${SECRET_KEY:-your-super-secret-key-change-this}
     volumes:
       - ./data:/app/data

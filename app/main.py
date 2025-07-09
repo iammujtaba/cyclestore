@@ -2,26 +2,18 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
-from sqlalchemy.orm import Session
 from contextlib import asynccontextmanager
 import os
 import logging
 
 from app.config import settings
-from app.db.session import get_db, engine, Base
-from app.models.product import Bicycle, Accessory, ProductImage
-from app.models.user import User, UserSession
-from app.models.admin import Admin, AdminSession
 from app.api.routes import router as api_router
 from app.routes.admin import router as admin_router
-from app.services.auth_service import auth_service
 from app.services.admin_auth_service import admin_auth_service
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Create tables on startup
-Base.metadata.create_all(bind=engine)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -80,14 +72,10 @@ async def health_check():
     """Health check endpoint for monitoring and load balancers"""
     return {
         "status": "healthy",
-        "service": settings.PROJECT_NAME,
+        "service": "SCRC",
         "version": "1.0.0"
     }
 
 # Mount static files
 static_dir = os.path.join(os.path.dirname(__file__), "static")
 app.mount("/static", StaticFiles(directory=static_dir), name="static")
-
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8080)

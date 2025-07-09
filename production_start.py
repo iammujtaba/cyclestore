@@ -35,11 +35,8 @@ def main():
         Path("logs").mkdir(exist_ok=True)
         
         logger.info("Starting Supreme Cycle & Rickshaw Company application in production mode")
-        
-        # Import and start the application
+
         import uvicorn
-        from app.main import app
-        from app.config import settings
         
         # Get configuration from environment or defaults
         host = os.getenv("HOST", "0.0.0.0")
