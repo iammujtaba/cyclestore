@@ -359,21 +359,28 @@
                         <select id="category" name="category" required>
                             <option value="">Select Category</option>
                             {% if product_type == 'bicycle' %}
-                                <option value="mountain" {{ 'selected' if (product and product.category == 'mountain') }}>Mountain Bike</option>
-                                <option value="road" {{ 'selected' if (product and product.category == 'road') }}>Road Bike</option>
-                                <option value="hybrid" {{ 'selected' if (product and product.category == 'hybrid') }}>Hybrid Bike</option>
-                                <option value="electric" {{ 'selected' if (product and product.category == 'electric') }}>Electric Bike</option>
+                                <option value="city" {{ 'selected' if (product and product.category == 'city') }}>City Bike</option>
+                                <option value="ladies" {{ 'selected' if (product and product.category == 'ladies') }}>Ladies Bike</option>
                                 <option value="kids" {{ 'selected' if (product and product.category == 'kids') }}>Kids Bike</option>
+                                <option value="ranger" {{ 'selected' if (product and product.category == 'ranger') }}>Ranger/MTB Bike</option>
+                                <option value="electric" {{ 'selected' if (product and product.category == 'electric') }}>Electric Bike</option>
                                 <option value="folding" {{ 'selected' if (product and product.category == 'folding') }}>Folding Bike</option>
                             {% else %}
-                                <option value="helmet" {{ 'selected' if (product and product.category == 'helmet') }}>Helmet</option>
+                                <option value="chain" {{ 'selected' if (product and product.category == 'chain') }}>Chain</option>
                                 <option value="lock" {{ 'selected' if (product and product.category == 'lock') }}>Lock</option>
-                                <option value="light" {{ 'selected' if (product and product.category == 'light') }}>Light</option>
-                                <option value="bag" {{ 'selected' if (product and product.category == 'bag') }}>Bag</option>
-                                <option value="pump" {{ 'selected' if (product and product.category == 'pump') }}>Pump</option>
-                                <option value="tool" {{ 'selected' if (product and product.category == 'tool') }}>Tool</option>
-                                <option value="tire" {{ 'selected' if (product and product.category == 'tire') }}>Tire</option>
-                                <option value="maintenance" {{ 'selected' if (product and product.category == 'maintenance') }}>Maintenance</option>
+                                <option value="freewheel" {{ 'selected' if (product and product.category == 'freewheel') }}>Freewheel</option>
+                                <option value="tyres" {{ 'selected' if (product and product.category == 'tyres') }}>Tyres</option>
+                                <option value="tubes" {{ 'selected' if (product and product.category == 'tubes') }}>Tubes</option>
+                                <option value="rim" {{ 'selected' if (product and product.category == 'rim') }}>Rim</option>
+                                <option value="mudguard" {{ 'selected' if (product and product.category == 'mudguard') }}>Mudguard</option>
+                                <option value="chaincover" {{ 'selected' if (product and product.category == 'chaincover') }}>Chain Cover</option>
+                                <option value="breaks" {{ 'selected' if (product and product.category == 'breaks') }}>Breaks</option>
+                                <option value="fork" {{ 'selected' if (product and product.category == 'fork') }}>Fork</option>
+                                <option value="handle" {{ 'selected' if (product and product.category == 'handle') }}>Handles</option>
+                                <option value="seat" {{ 'selected' if (product and product.category == 'seat') }}>Seat</option>
+                                <option value="other" {{ 'selected' if (product and product.category == 'other') }}>Other Accessories</option>
+
+
                             {% endif %}
                         </select>
                     </div>
@@ -429,11 +436,15 @@
                         </label>
                         <select id="wheel_size" name="wheel_size">
                             <option value="">Select Wheel Size</option>
+                            <option value="14" {{ 'selected' if (product and product.wheel_size == '14') }}>14 inch</option>
                             <option value="16" {{ 'selected' if (product and product.wheel_size == '16') }}>16 inch</option>
+                            <option value="18" {{ 'selected' if (product and product.wheel_size == '18') }}>18 inch</option>
                             <option value="20" {{ 'selected' if (product and product.wheel_size == '20') }}>20 inch</option>
+                            <option value="22" {{ 'selected' if (product and product.wheel_size == '22') }}>22 inch</option>
                             <option value="24" {{ 'selected' if (product and product.wheel_size == '24') }}>24 inch</option>
                             <option value="26" {{ 'selected' if (product and product.wheel_size == '26') }}>26 inch</option>
                             <option value="27.5" {{ 'selected' if (product and product.wheel_size == '27.5') }}>27.5 inch</option>
+                            <option value="28" {{ 'selected' if (product and product.wheel_size == '28') }}>28 inch</option>
                             <option value="29" {{ 'selected' if (product and product.wheel_size == '29') }}>29 inch</option>
                             <option value="700C" {{ 'selected' if (product and product.wheel_size == '700C') }}>700C</option>
                         </select>
@@ -454,10 +465,10 @@
                         </label>
                         <select id="brake_type" name="brake_type">
                             <option value="">Select Brake Type</option>
-                            <option value="Rim" {{ 'selected' if (product and product.brake_type == 'Rim') }}>Rim Brakes</option>
+                            <option value="V-Brake" {{ 'selected' if (product and product.brake_type == 'V-Brake') }}>V Brake</option>
+                            <option value="PowerBreak" {{ 'selected' if (product and product.brake_type == 'PowerBreak') }}>Power Breaks</option>
                             <option value="Disc" {{ 'selected' if (product and product.brake_type == 'Disc') }}>Disc Brakes</option>
-                            <option value="Hydraulic" {{ 'selected' if (product and product.brake_type == 'Hydraulic') }}>Hydraulic Brakes</option>
-                            <option value="Mechanical" {{ 'selected' if (product and product.brake_type == 'Mechanical') }}>Mechanical Brakes</option>
+                            <option value="Standard" {{ 'selected' if (product and product.brake_type == 'Standard') }}>Standard Brakes</option>
                         </select>
                     </div>
                     
