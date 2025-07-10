@@ -24,11 +24,12 @@ if [[ $REPLY == "1" ]]; then
     
     # Create nginx SSL configuration
     echo "📝 Creating nginx SSL configuration..."
-    cat > ./ssl/ssl.conf << 'EOF'
+    mkdir -p ./nginx-conf.d
+    cat > ./nginx-conf.d/ssl.conf << 'EOF'
 # HTTPS server configuration - automatically included when SSL certificates exist
 server {
     listen 443 ssl;
-    server_name _;
+    server_name supremecycle.in www.supremecycle.in;
     
     ssl_certificate /etc/nginx/ssl/cert.pem;
     ssl_certificate_key /etc/nginx/ssl/key.pem;
@@ -122,11 +123,12 @@ elif [[ $REPLY == "2" ]]; then
         
         # Create nginx SSL configuration
         echo "📝 Creating nginx SSL configuration..."
-        cat > ./ssl/ssl.conf << 'EOF'
+        mkdir -p ./nginx-conf.d
+        cat > ./nginx-conf.d/ssl.conf << 'EOF'
 # HTTPS server configuration - automatically included when SSL certificates exist
 server {
     listen 443 ssl;
-    server_name _;
+    server_name supremecycle.in www.supremecycle.in;
     
     ssl_certificate /etc/nginx/ssl/cert.pem;
     ssl_certificate_key /etc/nginx/ssl/key.pem;
@@ -149,12 +151,23 @@ server {
     }
 }
 
-# Redirect HTTP to HTTPS
+# Redirect HTTP to HTTPS for production
 server {
     listen 80;
-    server_name _;
-    return 301 https://$server_name$request_uri;
+    server_name supremecycle.in www.supremecycle.in;
+    return 301 https://$host$request_uri;
 }
+EOF
+
+        # Comment out the HTTP server in main nginx.conf to avoid conflicts
+        echo "📝 Updating main nginx.conf to disable HTTP when SSL is enabled..."
+        cp nginx.conf nginx.conf.backup
+        sed -i.bak '/# HTTP server/,/^    }$/s/^/#/' nginx.conf
+        
+        # Add a note in nginx.conf
+        cat >> nginx.conf << 'EOF'
+    
+    # HTTP server disabled - SSL redirect enabled in conf.d/ssl.conf
 EOF
         
         # Setup auto-renewal
