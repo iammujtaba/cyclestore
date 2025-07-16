@@ -6,6 +6,8 @@ from contextlib import asynccontextmanager
 import os
 import logging
 
+from fastapi.templating import Jinja2Templates
+
 from app.config import settings
 from app.api.routes import router as api_router
 from app.routes.admin import router as admin_router
@@ -14,7 +16,7 @@ from app.services.admin_auth_service import admin_auth_service
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-
+templates = Jinja2Templates(directory="app/templates")
 
 
 app = FastAPI(
@@ -50,6 +52,12 @@ async def health_check():
         "service": "SCRC",
         "version": "1.0.0"
     }
+
+@app.get("/marriage/invitation")
+async def marriage_invitation():
+    # return index.html template from templates/marriage
+    """Endpoint for marriage invitation page"""
+    return templates.TemplateResponse("marriage/index.html", {"request": {}})
 
 # Mount static files
 static_dir = os.path.join(os.path.dirname(__file__), "static")
